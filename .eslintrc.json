@@ -1,0 +1,12 @@
+{
+    "extends": [
+        "@rocketseat/eslint-config/node"
+    ],
+    "rules": {
+        "@typescript-eslint/no-empty-object-type": "off"
+    },
+    "ignorePatterns": [
+        "build",
+        "node_modules"
+    ]
+}
