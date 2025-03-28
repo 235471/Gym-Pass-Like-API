@@ -3,7 +3,8 @@
         "@rocketseat/eslint-config/node"
     ],
     "rules": {
-        "@typescript-eslint/no-empty-object-type": "off"
+        "@typescript-eslint/no-empty-object-type": "off",
+        "no-useless-constructor": "off"
     },
     "ignorePatterns": [
         "build",
