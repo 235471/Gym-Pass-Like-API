@@ -12,6 +12,6 @@ export function formatValidationErrorsForHTTP(errors: ValidationError[]) {
   // Transforms ValidationError to HTTP response format
   return errors.map((error) => ({
     field: error.field,
-    details: error.message,
+    message: error.message,
   }))
 }

@@ -6,10 +6,10 @@ export interface UserDTO {
   updatedAt?: Date | null
 }
 
-export interface CreateUserDTO {
+export interface UserRegisterDTO {
   name: string
   email: string
-  passwordHash: string
+  password: string
 }
 
 export interface ResponseDTO<T> {

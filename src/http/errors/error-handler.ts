@@ -1,5 +1,8 @@
 import { FastifyReply } from 'fastify'
 import { IError } from './interface/error'
+import { ValidationError } from './valdiation-error'
+import { formatValidationErrorsForHTTP } from '@/utils/error-formatter'
+import { ValidationErrors } from './validation-errors'
 
 type ErrorMap = {
   status: number
@@ -7,6 +10,22 @@ type ErrorMap = {
 }
 
 export function handleError(error: IError, reply: FastifyReply): FastifyReply {
+  // Handle individual ValidationError
+  if (error instanceof ValidationError) {
+    return reply.status(400).send({
+      error: 'ValidationError',
+      message: formatValidationErrorsForHTTP([error]),
+    })
+  }
+
+  // Handle multiple ValidationErrors
+  if (error instanceof ValidationErrors) {
+    return reply.status(400).send({
+      error: 'ValidationError',
+      message: formatValidationErrorsForHTTP(error.errors),
+    })
+  }
+
   const errorMap: Record<string, ErrorMap> = {
     ConflictError: {
       status: 409,
