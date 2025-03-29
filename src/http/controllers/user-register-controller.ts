@@ -1,17 +1,17 @@
 import { FastifyRequest, FastifyReply } from 'fastify'
 import { z } from 'zod'
-import { IUserService } from '@/services/interfaces/IUserService'
-import { CreateUserDTO } from '@/types/user'
 import { IUserController } from './interfaces/IUserController'
 import { UserPresenter } from '@/presenters/user-presenter'
 import { injectable, inject } from 'tsyringe'
 import { handleError } from '../errors/error-handler'
+import { RegisterUserUseCase } from '@/use-cases/users/register-user'
 
 @injectable()
 export class UserRegisterController implements IUserController {
-  constructor(@inject('UserService') private userService: IUserService) {
-    console.log('UserRegisterController initialized')
-  }
+  constructor(
+    @inject(RegisterUserUseCase.name)
+    private registerUserUseCase: RegisterUserUseCase,
+  ) {}
 
   async register(request: FastifyRequest, reply: FastifyReply) {
     const createUserBodySchema = z.object({
@@ -26,13 +26,11 @@ export class UserRegisterController implements IUserController {
     try {
       const { name, email, password } = createUserBodySchema.parse(request.body)
 
-      const userData: CreateUserDTO = {
+      const result = await this.registerUserUseCase.execute({
         name,
         email,
-        passwordHash: password,
-      }
-
-      const result = await this.userService.create(userData)
+        password,
+      })
 
       if (result.isLeft()) {
         return handleError(result.value, reply)

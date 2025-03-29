@@ -1,14 +1,21 @@
 import { container } from 'tsyringe'
 import { IUserRepository } from './repositories/interfaces/IUserRepository'
 import { PrismaUserRepository } from './repositories/prisma-user-repository'
-import { IUserService } from './services/interfaces/IUserService'
-import { UserService } from './services/user-service'
 import { UserRegisterController } from './http/controllers/user-register-controller'
+import { RegisterUserUseCase } from './use-cases/users/register-user'
+import { GetUserByEmailUseCase } from './use-cases/users/get-user-by-email'
+import { GetUserByIdUseCase } from './use-cases/users/get-user-by-id'
 
-// Registrando as dependências
+// Registering Repositories
 container.registerSingleton<IUserRepository>(
   'UserRepository',
   PrismaUserRepository,
 )
-container.registerSingleton<IUserService>('UserService', UserService)
+
+// Registering Use Cases
+container.registerSingleton(RegisterUserUseCase.name, RegisterUserUseCase)
+container.registerSingleton(GetUserByEmailUseCase.name, GetUserByEmailUseCase)
+container.registerSingleton(GetUserByIdUseCase.name, GetUserByIdUseCase)
+
+// Registering Controllers
 container.registerSingleton('UserRegisterController', UserRegisterController)
