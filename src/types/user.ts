@@ -9,7 +9,7 @@ export interface UserDTO {
 export interface CreateUserDTO {
   name: string
   email: string
-  password: string
+  passwordHash: string
 }
 
 export interface ResponseDTO<T> {

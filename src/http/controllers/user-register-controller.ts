@@ -29,7 +29,7 @@ export class UserRegisterController implements IUserController {
       const userData: CreateUserDTO = {
         name,
         email,
-        password,
+        passwordHash: password,
       }
 
       const result = await this.userService.create(userData)

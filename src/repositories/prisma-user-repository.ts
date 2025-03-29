@@ -1,7 +1,6 @@
 import { prisma } from '@/lib/prisma'
 import { IUserRepository } from './interfaces/IUserRepository'
 import { CreateUserDTO } from '@/types/user'
-import { hash } from 'bcryptjs'
 import { User } from '@prisma/client'
 import { injectable } from 'tsyringe'
 import { Either, left, right } from '@/types/either'
@@ -10,18 +9,10 @@ import { InternalServerError } from '@/http/errors/internal-server-error'
 
 @injectable()
 export class PrismaUserRepository implements IUserRepository {
-  async create({
-    name,
-    email,
-    password,
-  }: CreateUserDTO): Promise<Either<IError, User>> {
+  async create(data: CreateUserDTO): Promise<Either<IError, User>> {
     try {
       const user = await prisma.user.create({
-        data: {
-          name,
-          email,
-          passwordHash: await hash(password, 6),
-        },
+        data,
       })
 
       return right(user)

@@ -7,6 +7,7 @@ import { Either, left, right } from '@/types/either'
 import { IError } from '@/http/errors/interface/error'
 import { ConflictError } from '@/http/errors/conflict-error'
 import { NotFoundError } from '@/http/errors/not-found-error'
+import { hash } from 'bcryptjs'
 
 @injectable()
 export class UserService implements IUserService {
@@ -38,7 +39,13 @@ export class UserService implements IUserService {
       return left(new ConflictError(`Email '${data.email}' is already in use`))
     }
 
-    const createResult = await this.userRepository.create(data)
+    const passwordHash = await hash(data.passwordHash, 6)
+
+    const createResult = await this.userRepository.create({
+      name: data.name,
+      email: data.email,
+      passwordHash,
+    })
 
     if (createResult.isLeft()) {
       return left(createResult.value)
