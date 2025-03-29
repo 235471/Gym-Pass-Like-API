@@ -3,7 +3,7 @@ import { z } from 'zod'
 import { IUserService } from '@/services/interfaces/IUserService'
 import { CreateUserDTO } from '@/types/user'
 import { IUserController } from './interfaces/IUserController'
-import { UserPresenter } from '@/presenters/UserPresenter'
+import { UserPresenter } from '@/presenters/user-presenter'
 import { injectable, inject } from 'tsyringe'
 import { handleError } from '../errors/error-handler'
 
