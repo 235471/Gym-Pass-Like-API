@@ -5,26 +5,46 @@ import { UserPresenter } from '@/presenters/user-presenter'
 import { injectable, inject } from 'tsyringe'
 import { handleError } from '../errors/error-handler'
 import { RegisterUserUseCase } from '@/use-cases/users/register-user'
+import { InternalServerError } from '../errors/internal-server-error'
+import {
+  formatValidationErrors,
+  formatValidationErrorsForHTTP,
+} from '@/utils/error-formatter'
 
 @injectable()
 export class UserRegisterController implements IUserController {
+  private createUserBodySchema = z.object({
+    name: z.string(),
+    email: z.string().email(),
+    password: z
+      .string()
+      .min(6, 'Password must be at least 6 characters long.')
+      .regex(
+        /^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*()_+]).*$/,
+        'Password must contain at least one uppercase letter, one number, and one special character.',
+      ),
+  })
+
   constructor(
     @inject(RegisterUserUseCase.name)
     private registerUserUseCase: RegisterUserUseCase,
   ) {}
 
   async register(request: FastifyRequest, reply: FastifyReply) {
-    const createUserBodySchema = z.object({
-      name: z.string(),
-      email: z.string().email(),
-      password: z
-        .string()
-        .min(6)
-        .regex(/^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*()_+]).*$/),
-    })
+    const validationResult = this.createUserBodySchema.safeParse(request.body)
+
+    if (!validationResult.success) {
+      const validationErrors = formatValidationErrors(validationResult.error)
+      const formattedErrors = formatValidationErrorsForHTTP(validationErrors)
+
+      return reply.status(400).send({
+        error: 'ValidationError',
+        message: formattedErrors,
+      })
+    }
 
     try {
-      const { name, email, password } = createUserBodySchema.parse(request.body)
+      const { name, email, password } = validationResult.data
 
       const result = await this.registerUserUseCase.execute({
         name,
@@ -38,16 +58,7 @@ export class UserRegisterController implements IUserController {
 
       return reply.status(201).send(UserPresenter.toHTTP(result.value))
     } catch (error) {
-      if (error instanceof z.ZodError) {
-        return reply.status(400).send({
-          message: 'Validation error.',
-          issues: error.format(),
-        })
-      }
-
-      return reply.status(500).send({
-        message: 'Internal server error.',
-      })
+      return handleError(new InternalServerError(), reply)
     }
   }
 }

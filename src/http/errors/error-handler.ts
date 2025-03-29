@@ -12,7 +12,6 @@ export function handleError(error: IError, reply: FastifyReply): FastifyReply {
       status: 409,
       message: 'Resource already exists',
     },
-    // Adicione outros erros aqui
     UnauthorizedError: {
       status: 401,
       message: 'Unauthorized',
