@@ -1,4 +1,4 @@
-import { UserDTO } from '@/types/user'
+import { UserDTO } from '@/application/users/dtos/user'
 
 export class UserPresenter {
   static toHTTP(user: UserDTO) {

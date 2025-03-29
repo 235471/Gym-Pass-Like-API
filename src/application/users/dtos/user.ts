@@ -12,6 +12,12 @@ export interface UserRegisterDTO {
   password: string
 }
 
+export interface CreateUserDTO {
+  name: string
+  email: string
+  passwordHash: string
+}
+
 export interface ResponseDTO<T> {
   data: T
 }

@@ -1,5 +1,5 @@
 import { ZodError } from 'zod'
-import { ValidationError } from '@/http/errors/valdiation-error'
+import { ValidationError } from '@/shared/errors/valdiation-error'
 
 export function formatValidationErrors(error: ZodError) {
   // Map zod errors to ValidationError instances

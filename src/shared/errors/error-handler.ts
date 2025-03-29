@@ -1,7 +1,7 @@
 import { FastifyReply } from 'fastify'
-import { IError } from './interface/error'
+import { IError } from './interfaces/error'
 import { ValidationError } from './valdiation-error'
-import { formatValidationErrorsForHTTP } from '@/utils/error-formatter'
+import { formatValidationErrorsForHTTP } from '@/shared/utils/error-formatter'
 import { ValidationErrors } from './validation-errors'
 
 type ErrorMap = {

@@ -1,7 +1,5 @@
 import 'reflect-metadata'
 import fastify from 'fastify'
-import { userRoutes } from './http/routes/user-routes'
-import './container'
 import {
   ZodTypeProvider,
   jsonSchemaTransform,
@@ -10,7 +8,9 @@ import {
 } from 'fastify-type-provider-zod'
 import fastifySwagger from '@fastify/swagger'
 import fastifySwaggerUi from '@fastify/swagger-ui'
-import { swaggerConfig, swaggerUiConfig } from './config/swagger'
+import { swaggerConfig, swaggerUiConfig } from './infrastructure/config/swagger'
+import { userRoutes } from './infrastructure/http/user-routes'
+import './infrastructure/container/container'
 
 // Create fastify instance with Zod type provider
 const app = fastify().withTypeProvider<ZodTypeProvider>()

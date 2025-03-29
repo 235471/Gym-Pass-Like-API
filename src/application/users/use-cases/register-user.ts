@@ -1,14 +1,14 @@
-import { UserDTO, UserRegisterDTO } from '@/types/user'
-import { IUserRepository } from '@/repositories/interfaces/IUserRepository'
-import { Either, left, right } from '@/types/either'
-import { IError } from '@/http/errors/interface/error'
-import { ConflictError } from '@/http/errors/conflict-error'
+import { UserDTO, UserRegisterDTO } from '@/application/users/dtos/user'
+import { IUserRepository } from '@/domains/users/repositories/IUserRepository'
+import { Either, left, right } from '@/shared/utils/either'
+import { IError } from '@/shared/errors/interfaces/error'
+import { ConflictError } from '@/shared/errors/conflict-error'
 import { injectable, inject } from 'tsyringe'
 import { hash } from 'bcryptjs'
-import { UserMapper } from '@/utils/user-mapper'
+import { UserMapper } from '@/shared/utils/user-mapper'
 import { z } from 'zod'
-import { formatValidationErrors } from '@/utils/error-formatter'
-import { ValidationErrors } from '@/http/errors/validation-errors'
+import { formatValidationErrors } from '@/shared/utils/error-formatter'
+import { ValidationErrors } from '@/shared/errors/validation-errors'
 
 // Schema for request validation
 const registerUserSchema = z.object({

@@ -1,5 +1,5 @@
 import { FastifyInstance } from 'fastify'
-import { makeUserController } from '../controllers/factories/makeUserController'
+import { makeUserController } from '@/infrastructure/factories/makeUserController'
 import { z } from 'zod'
 
 export async function userRoutes(app: FastifyInstance) {

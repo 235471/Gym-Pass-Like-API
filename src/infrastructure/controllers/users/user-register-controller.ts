@@ -1,11 +1,11 @@
 import { FastifyRequest, FastifyReply } from 'fastify'
 import { IUserController } from './interfaces/IUserController'
-import { UserPresenter } from '@/presenters/user-presenter'
+import { UserPresenter } from '@/shared/presenters/user-presenter'
 import { injectable, inject } from 'tsyringe'
-import { handleError } from '../errors/error-handler'
-import { RegisterUserUseCase } from '@/use-cases/users/register-user'
-import { InternalServerError } from '../errors/internal-server-error'
-import { UserRegisterDTO } from '@/types/user'
+import { handleError } from '@/shared/errors/error-handler'
+import { RegisterUserUseCase } from '@/application/users/use-cases/register-user'
+import { InternalServerError } from '@/shared/errors/internal-server-error'
+import { UserRegisterDTO } from '@/application/users/dtos/user'
 
 @injectable()
 export class UserRegisterController implements IUserController {
@@ -18,6 +18,8 @@ export class UserRegisterController implements IUserController {
     request: FastifyRequest<{ Body: UserRegisterDTO }>,
     reply: FastifyReply,
   ) => {
+    console.log('oi')
+
     try {
       const result = await this.registerUserUseCase.execute(request.body)
 
