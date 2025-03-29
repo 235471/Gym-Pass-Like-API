@@ -1,5 +1,7 @@
+import 'reflect-metadata'
 import fastify from 'fastify'
 import { userRoutes } from './http/routes/userRoutes'
+import './container'
 
 const app = fastify()
 

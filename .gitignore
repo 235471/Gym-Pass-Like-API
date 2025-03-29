@@ -145,4 +145,7 @@ dist
 
 # Docker
 data
+
+# MD
+explanation.MD
 # End of https://www.toptal.com/developers/gitignore/api/node
