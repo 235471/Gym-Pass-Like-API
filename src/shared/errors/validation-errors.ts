@@ -1,5 +1,5 @@
-import { IError } from './interface/error'
-import { ValidationError } from './valdiation-error'
+import { IError } from './interfaces/error'
+import { ValidationError } from './validation-error'
 
 export class ValidationErrors implements IError {
   name = 'ValidationErrors'

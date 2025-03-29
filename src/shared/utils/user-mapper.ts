@@ -7,6 +7,7 @@ export class UserMapper {
       id: user.id,
       name: user.name,
       email: user.email,
+      password: user.passwordHash,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
     }

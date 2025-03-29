@@ -9,7 +9,7 @@ import {
 import fastifySwagger from '@fastify/swagger'
 import fastifySwaggerUi from '@fastify/swagger-ui'
 import { swaggerConfig, swaggerUiConfig } from './infrastructure/config/swagger'
-import { userRoutes } from './infrastructure/http/user-routes'
+import { userRoutes } from './infrastructure/http/users/routes/user-routes'
 import './infrastructure/container/container'
 
 // Create fastify instance with Zod type provider

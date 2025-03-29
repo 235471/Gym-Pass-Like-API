@@ -1,8 +1,9 @@
 import { FastifyReply } from 'fastify'
 import { IError } from './interfaces/error'
-import { ValidationError } from './valdiation-error'
+import { ValidationError } from './validation-error'
 import { formatValidationErrorsForHTTP } from '@/shared/utils/error-formatter'
 import { ValidationErrors } from './validation-errors'
+import { env } from '@/env'
 
 type ErrorMap = {
   status: number
@@ -47,12 +48,25 @@ export function handleError(error: IError, reply: FastifyReply): FastifyReply {
       status: 400,
       message: 'Bad request',
     },
+    InternalServerError: {
+      status: 500,
+      message: 'Internal Server Error',
+    },
   }
 
   const errorName = error.constructor.name
   const errorInfo = errorMap[errorName] || {
     status: 500,
     message: 'Internal Server Error',
+  }
+
+  if (errorInfo.status === 500 && env.NODE_ENV !== 'production') {
+    // Log the error stack trace in development mode
+    console.error('Error stack trace:')
+    console.error(error.stack || 'No stack trace available')
+    console.error('Error name:', errorName)
+    console.error('Error message:', error.message)
+    console.error('Error object:', error)
   }
 
   return reply.status(errorInfo.status).send({

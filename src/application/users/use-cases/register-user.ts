@@ -1,4 +1,4 @@
-import { UserDTO, UserRegisterDTO } from '@/application/users/dtos/user'
+import { UserDTO, RegisterUserDTO } from '@/application/users/dtos/user'
 import { IUserRepository } from '@/domains/users/repositories/IUserRepository'
 import { Either, left, right } from '@/shared/utils/either'
 import { IError } from '@/shared/errors/interfaces/error'
@@ -23,15 +23,6 @@ const registerUserSchema = z.object({
     ),
 })
 
-// Schema for response
-export const registerUserResponseSchema = z.object({
-  id: z.string().uuid(),
-  name: z.string(),
-  email: z.string().email(),
-  createdAt: z.date(),
-  updatedAt: z.date().nullable(),
-})
-
 // Types inferred from schemas
 export type RegisterUserUseCaseRequest = z.infer<typeof registerUserSchema>
 type RegisterUserUseCaseResponse = Either<IError, UserDTO>
@@ -42,7 +33,7 @@ export class RegisterUserUseCase {
     @inject('UserRepository') private userRepository: IUserRepository,
   ) {}
 
-  async execute(data: UserRegisterDTO): Promise<RegisterUserUseCaseResponse> {
+  async execute(data: RegisterUserDTO): Promise<RegisterUserUseCaseResponse> {
     // Validate input data using Zod
     const validationResult = registerUserSchema.safeParse(data)
     if (!validationResult.success) {
@@ -76,8 +67,6 @@ export class RegisterUserUseCase {
       return left(createResult.value)
     }
 
-    const userDTO = UserMapper.toDTO(createResult.value)
-
-    return right(userDTO)
+    return right(UserMapper.toDTO(createResult.value))
   }
 }

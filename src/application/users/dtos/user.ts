@@ -2,14 +2,9 @@ export interface UserDTO {
   id: string
   name: string
   email: string
+  password: string
   createdAt?: Date
   updatedAt?: Date | null
-}
-
-export interface UserRegisterDTO {
-  name: string
-  email: string
-  password: string
 }
 
 export interface CreateUserDTO {
@@ -18,8 +13,14 @@ export interface CreateUserDTO {
   passwordHash: string
 }
 
-export interface ResponseDTO<T> {
-  data: T
+// DTO para registrar usuários (usado pelo caso de uso)
+export interface RegisterUserDTO {
+  name: string
+  email: string
+  password: string
 }
-
-export interface UserResponseDTO extends ResponseDTO<UserDTO> {}
+// DTO para autenticar usuários (usado pelo caso de uso)
+export interface AuthenticateUserDTO {
+  email: string
+  password: string
+}
