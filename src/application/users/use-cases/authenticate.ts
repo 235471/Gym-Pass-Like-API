@@ -6,23 +6,10 @@ import { Either, left, right } from '@/shared/utils/either'
 import { compare } from 'bcryptjs'
 import { UnauthorizedError } from '@/shared/errors/unauthorized-error'
 import { UserMapper } from '@/shared/utils/user-mapper'
-import { ValidationErrors } from '@/shared/errors/validation-errors'
-import { formatValidationErrors } from '@/shared/utils/error-formatter'
-import { z } from 'zod'
+import { authenticateUserSchema } from '../schemas/user-auth-schemas'
+import { validateData } from '@/shared/utils/validation'
 
-type RegisterUserUseCaseResponse = Either<IError, UserDTO>
-
-// Schema for request validation
-const authenticateUserSchema = z.object({
-  email: z.string().email('Invalid email format'),
-  password: z
-    .string()
-    .min(6, 'Password must be at least 6 characters long.')
-    .regex(
-      /^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*()_+]).*$/,
-      'Password must contain at least one uppercase letter, one number, and one special character.',
-    ),
-})
+type AuthenticateUserUseCaseResponse = Either<IError, UserDTO>
 
 @injectable()
 export class AuthenticateUseCase {
@@ -32,15 +19,14 @@ export class AuthenticateUseCase {
 
   async execute(
     data: AuthenticateUserDTO,
-  ): Promise<RegisterUserUseCaseResponse> {
-    // Validate input data using Zod
-    const validationResult = authenticateUserSchema.safeParse(data)
-    if (!validationResult.success) {
-      // Return all validation errors together
-      const errors = formatValidationErrors(validationResult.error)
-      return left(new ValidationErrors(errors))
+  ): Promise<AuthenticateUserUseCaseResponse> {
+    // Validate input data using the shared validation function
+    const validationResult = validateData(authenticateUserSchema, data)
+    if (validationResult.isLeft()) {
+      return left(validationResult.value)
     }
-    const { email, password } = data
+
+    const { email, password } = validationResult.value
 
     // Check if user exists
     const userResult = await this.userRepository.findByEmail(email)
@@ -62,10 +48,6 @@ export class AuthenticateUseCase {
       return left(new UnauthorizedError('Invalid credentials'))
     }
 
-    if (!doesPasswordMatch) {
-      return left(new Error('Invalid credentials'))
-    }
-
-    return right(UserMapper.toDTO(userResult.value))
+    return right(UserMapper.toDTO(user))
   }
 }

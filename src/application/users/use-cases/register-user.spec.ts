@@ -7,7 +7,7 @@ describe('Register Use Case test suite', () => {
   let inMemoryUsersRepository: InMemoryUsersRepository
   let sut: RegisterUserUseCase
 
-  beforeAll(() => {
+  beforeEach(() => {
     inMemoryUsersRepository = new InMemoryUsersRepository()
     sut = new RegisterUserUseCase(inMemoryUsersRepository)
   })

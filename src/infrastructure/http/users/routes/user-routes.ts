@@ -48,7 +48,7 @@ export async function userRoutes(app: FastifyInstance) {
         password: z.string(),
       }),
       response: {
-        201: z.object({}),
+        200: z.object({}),
         400: z.object({
           error: z.string(),
           message: z.array(

@@ -8,7 +8,7 @@ describe('Authenticate Use Case test suite', () => {
   let inMemoryUsersRepository: InMemoryUsersRepository
   let sut: AuthenticateUseCase
 
-  beforeAll(() => {
+  beforeEach(() => {
     inMemoryUsersRepository = new InMemoryUsersRepository()
     sut = new AuthenticateUseCase(inMemoryUsersRepository)
   })

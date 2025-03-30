@@ -30,6 +30,10 @@ export class InMemoryUsersRepository implements IUserRepository {
   }
 
   async findById(id: string): Promise<Either<IError, User | null>> {
-    throw new Error('Method not implemented.')
+    const user = this.items.find((user) => user.id === id)
+    if (!user) {
+      return right(null)
+    }
+    return right(user)
   }
 }

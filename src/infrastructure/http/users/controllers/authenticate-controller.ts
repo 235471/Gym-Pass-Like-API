@@ -23,7 +23,7 @@ export class AuthenticateController {
         return handleError(result.value, reply)
       }
 
-      return reply.status(201).send()
+      return reply.status(200).send()
     } catch (error) {
       return handleError(
         new InternalServerError(

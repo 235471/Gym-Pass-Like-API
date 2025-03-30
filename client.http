@@ -8,3 +8,12 @@ Content-Type: application/json
     "email": "testemail@example.com",
     "password": "#Test123"
 }
+
+###
+POST {{baseUrl}}/users/auth
+Content-Type: application/json
+
+{
+    "email": "testemail@example.com",
+    "password": "#Test123"
+}
