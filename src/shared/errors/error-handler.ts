@@ -28,13 +28,13 @@ export function handleError(error: IError, reply: FastifyReply): FastifyReply {
   }
 
   const errorMap: Record<string, ErrorMap> = {
-    ConflictError: {
-      status: 409,
-      message: 'Resource already exists',
+    BadRequestError: {
+      status: 400,
+      message: 'Bad request',
     },
-    UnauthorizedError: {
+    InvalidCredentialsError: {
       status: 401,
-      message: 'Unauthorized',
+      message: 'Invalid credentials',
     },
     ForbiddenError: {
       status: 403,
@@ -44,9 +44,13 @@ export function handleError(error: IError, reply: FastifyReply): FastifyReply {
       status: 404,
       message: 'Resource not found',
     },
-    BadRequestError: {
-      status: 400,
-      message: 'Bad request',
+    ConflictError: {
+      status: 409,
+      message: 'Resource already exists',
+    },
+    TooManyRequestsError: {
+      status: 429,
+      message: 'Too Many Requests',
     },
     InternalServerError: {
       status: 500,

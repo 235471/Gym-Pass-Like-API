@@ -4,7 +4,7 @@ import { AuthenticateUserDTO, UserDTO } from '../dtos/user-dto'
 import { IError } from '@/shared/errors/interfaces/error'
 import { Either, left, right } from '@/shared/utils/either'
 import { compare } from 'bcryptjs'
-import { UnauthorizedError } from '@/shared/errors/unauthorized-error'
+import { InvalidCredentialsError } from '@/shared/errors/invalid-credentials-error'
 import { UserMapper } from '@/shared/utils/user-mapper'
 import { authenticateUserSchema } from '../schemas/user-auth-schemas'
 import { validateData } from '@/shared/utils/validation'
@@ -38,14 +38,14 @@ export class AuthenticateUseCase {
     const user = userResult.value
 
     if (!user) {
-      return left(new UnauthorizedError('Invalid credentials'))
+      return left(new InvalidCredentialsError())
     }
 
     // Verify password
     const doesPasswordMatch = await compare(password, user.passwordHash)
 
     if (!doesPasswordMatch) {
-      return left(new UnauthorizedError('Invalid credentials'))
+      return left(new InvalidCredentialsError())
     }
 
     return right(UserMapper.toDTO(user))

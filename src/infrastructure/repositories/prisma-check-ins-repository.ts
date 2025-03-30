@@ -20,4 +20,11 @@ export class PrismaCheckInRepository implements ICheckInRepository {
       return left(new InternalServerError('Error creating check in'))
     }
   }
+
+  findByUserIdOnDate(
+    userId: string,
+    date: Date,
+  ): Promise<Either<IError, CheckIn | null>> {
+    throw new Error('Method not implemented.')
+  }
 }

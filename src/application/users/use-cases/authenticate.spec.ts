@@ -2,7 +2,7 @@ import { InMemoryUsersRepository } from '@/domains/users/repository/in-memory/in
 import { hash } from 'bcryptjs'
 import { AuthenticateUseCase } from './authenticate'
 import { makeUser } from '@/shared/test/factories/make-user'
-import { UnauthorizedError } from '@/shared/errors/unauthorized-error'
+import { InvalidCredentialsError } from '@/shared/errors/invalid-credentials-error'
 
 describe('Authenticate Use Case test suite', () => {
   let inMemoryUsersRepository: InMemoryUsersRepository
@@ -55,7 +55,7 @@ describe('Authenticate Use Case test suite', () => {
     expect(result.isLeft()).toBeTruthy()
     if (result.isLeft()) {
       const error = result.value
-      expect(error).toBeInstanceOf(UnauthorizedError)
+      expect(error).toBeInstanceOf(InvalidCredentialsError)
       expect(error.message).toBe('Invalid credentials')
     }
   })
@@ -81,7 +81,7 @@ describe('Authenticate Use Case test suite', () => {
     expect(result.isLeft()).toBeTruthy()
     if (result.isLeft()) {
       const error = result.value
-      expect(error).toBeInstanceOf(UnauthorizedError)
+      expect(error).toBeInstanceOf(InvalidCredentialsError)
       expect(error.message).toBe('Invalid credentials')
     }
   })

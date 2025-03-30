@@ -9,4 +9,6 @@ export interface CheckInDTO {
 export interface CreateCheckInDTO {
   userId: string
   gymId: string
+  userLatitude: number
+  userLongitude: number
 }
