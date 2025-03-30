@@ -1,4 +1,4 @@
-import { InMemoryUsersRepository } from '@/domains/users/repositories/in-memory/in-memory-user-repository'
+import { InMemoryUsersRepository } from '@/domains/users/repository/in-memory/in-memory-user-repository'
 import { makeUser } from '@/shared/test/factories/make-user'
 import { GetUserProfileUseCase } from './get-user-profile'
 import { hash } from 'bcryptjs'

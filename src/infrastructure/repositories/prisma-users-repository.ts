@@ -1,11 +1,11 @@
 import { prisma } from '@/infrastructure/database/prisma'
-import { IUserRepository } from '@/domains/users/repositories/IUserRepository'
+import { IUserRepository } from '@/domains/users/repository/IUserRepository'
 import { User } from '@prisma/client'
 import { injectable } from 'tsyringe'
 import { Either, left, right } from '@/shared/utils/either'
 import { IError } from '@/shared/errors/interfaces/error'
 import { InternalServerError } from '@/shared/errors/internal-server-error'
-import { CreateUserDTO } from '@/application/users/dtos/user'
+import { CreateUserDTO } from '@/application/users/dtos/user-dto'
 
 @injectable()
 export class PrismaUserRepository implements IUserRepository {

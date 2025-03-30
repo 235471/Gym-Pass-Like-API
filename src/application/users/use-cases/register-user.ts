@@ -1,5 +1,5 @@
-import { UserDTO, RegisterUserDTO } from '@/application/users/dtos/user'
-import { IUserRepository } from '@/domains/users/repositories/IUserRepository'
+import { UserDTO, RegisterUserDTO } from '@/application/users/dtos/user-dto'
+import { IUserRepository } from '@/domains/users/repository/IUserRepository'
 import { Either, left, right } from '@/shared/utils/either'
 import { IError } from '@/shared/errors/interfaces/error'
 import { ConflictError } from '@/shared/errors/conflict-error'

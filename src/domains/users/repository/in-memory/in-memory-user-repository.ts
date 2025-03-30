@@ -1,4 +1,4 @@
-import { CreateUserDTO } from '@/application/users/dtos/user'
+import { CreateUserDTO } from '@/application/users/dtos/user-dto'
 import { IError } from '@/shared/errors/interfaces/error'
 import { Either, right } from '@/shared/utils/either'
 import { User } from '@prisma/client'

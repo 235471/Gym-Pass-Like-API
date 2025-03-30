@@ -1,6 +1,6 @@
-import { IUserRepository } from '@/domains/users/repositories/IUserRepository'
+import { IUserRepository } from '@/domains/users/repository/IUserRepository'
 import { injectable, inject } from 'tsyringe'
-import { UserDTO } from '../dtos/user'
+import { UserDTO } from '../dtos/user-dto'
 import { IError } from '@/shared/errors/interfaces/error'
 import { Either, left, right } from '@/shared/utils/either'
 import { UserMapper } from '@/shared/utils/user-mapper'
@@ -25,7 +25,7 @@ export class GetUserProfileUseCase {
     if (userResult.isLeft()) {
       return left(userResult.value)
     }
-    console.log('oi')
+
     if (!userResult.value) {
       return left(new NotFoundError())
     }

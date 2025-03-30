@@ -3,7 +3,7 @@ import { injectable, inject } from 'tsyringe'
 import { handleError } from '@/shared/errors/error-handler'
 import { RegisterUserUseCase } from '@/application/users/use-cases/register-user'
 import { InternalServerError } from '@/shared/errors/internal-server-error'
-import { RegisterUserDTO } from '@/application/users/dtos/user'
+import { RegisterUserDTO } from '@/application/users/dtos/user-dto'
 
 @injectable()
 export class UserRegisterController {

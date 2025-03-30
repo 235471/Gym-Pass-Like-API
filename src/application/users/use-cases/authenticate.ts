@@ -1,6 +1,6 @@
-import { IUserRepository } from '@/domains/users/repositories/IUserRepository'
+import { IUserRepository } from '@/domains/users/repository/IUserRepository'
 import { injectable, inject } from 'tsyringe'
-import { AuthenticateUserDTO, UserDTO } from '../dtos/user'
+import { AuthenticateUserDTO, UserDTO } from '../dtos/user-dto'
 import { IError } from '@/shared/errors/interfaces/error'
 import { Either, left, right } from '@/shared/utils/either'
 import { compare } from 'bcryptjs'

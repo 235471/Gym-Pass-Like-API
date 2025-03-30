@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker'
-import { RegisterUserDTO } from '@/application/users/dtos/user'
+import { RegisterUserDTO } from '@/application/users/dtos/user-dto'
 
 export function makeUser(
   override: Partial<RegisterUserDTO> = {},
