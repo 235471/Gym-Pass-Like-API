@@ -7,10 +7,9 @@ export const emailSchema = z.string().email('Invalid email format')
 export const strongPasswordSchema = z
   .string()
   .min(6, 'Password must be at least 6 characters long.')
-  .regex(
-    /^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*()_+]).*$/,
-    'Password must contain at least one uppercase letter, one number, and one special character.',
-  )
+  .regex(/(?=.*[A-Z])/, 'Password must contain at least one uppercase letter.')
+  .regex(/(?=.*[0-9])/, 'Password must contain at least one number.')
+  .regex(/(?=.*[!@#$%^&*()_+])/, 'Password must contain at least one special character.')
 
 // Register user Schema
 export const registerUserSchema = z.object({

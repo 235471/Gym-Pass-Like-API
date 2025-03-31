@@ -8,8 +8,6 @@ services:
       POSTGRES_DB: api-solid-gym
     ports:
       - 5432:5432
-    volumes:
-      - ./data:/bitnami/postgresql
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "docker-solid", "-d", "api-solid-gym"]
       interval: 10s
