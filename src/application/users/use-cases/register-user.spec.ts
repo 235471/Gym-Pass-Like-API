@@ -118,7 +118,9 @@ describe('Register Use Case test suite', () => {
       const error = result.value as ValidationErrors
       expect(error).toBeInstanceOf(ValidationErrors)
       expect(error.errors).toHaveLength(1)
-      expect(error.errors[0].message).toBe('Password must be at least 6 characters long.')
+      expect(error.errors[0].message).toBe(
+        'Password must be at least 6 characters long.',
+      )
     }
   })
 
@@ -131,7 +133,9 @@ describe('Register Use Case test suite', () => {
       const error = result.value as ValidationErrors
       expect(error).toBeInstanceOf(ValidationErrors)
       expect(error.errors).toHaveLength(1)
-      expect(error.errors[0].message).toContain('Password must contain at least one uppercase letter')
+      expect(error.errors[0].message).toContain(
+        'Password must contain at least one uppercase letter',
+      )
     }
   })
 
@@ -144,7 +148,9 @@ describe('Register Use Case test suite', () => {
       const error = result.value as ValidationErrors
       expect(error).toBeInstanceOf(ValidationErrors)
       expect(error.errors).toHaveLength(1)
-      expect(error.errors[0].message).toContain('Password must contain at least one number')
+      expect(error.errors[0].message).toContain(
+        'Password must contain at least one number',
+      )
     }
   })
 
@@ -157,7 +163,9 @@ describe('Register Use Case test suite', () => {
       const error = result.value as ValidationErrors
       expect(error).toBeInstanceOf(ValidationErrors)
       expect(error.errors).toHaveLength(1)
-      expect(error.errors[0].message).toContain('Password must contain at least one special character')
+      expect(error.errors[0].message).toContain(
+        'Password must contain at least one special character',
+      )
     }
   })
 

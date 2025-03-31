@@ -20,7 +20,7 @@ export function makeCheckIn(
     gymId: override.gymId ?? randomUUID(), // Default to a random gym ID
     createdAt: override.createdAt ?? new Date(), // Default to current date/time
     validateAt: override.validateAt ? new Date(override.validateAt) : null, // Handle optional validation date
-  };
+  }
 
   return checkIn
 }

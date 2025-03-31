@@ -3,7 +3,7 @@ import { FetchUserCheckInsHistoryUseCase } from './fetch-user-check-ins-history'
 import { makeCheckIn } from '@/shared/test/factories/make-check-in'
 import { randomUUID } from 'node:crypto'
 
-describe('Fetch User Check In History test suite', () => {
+describe('Fetch User Check In History Use Case test suite', () => {
   let inMemoryCheckInRepository: InMemoryCheckInRepository
   let sut: FetchUserCheckInsHistoryUseCase
 

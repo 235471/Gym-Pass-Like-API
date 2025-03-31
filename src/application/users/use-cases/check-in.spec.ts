@@ -11,7 +11,7 @@ import { BadRequestError } from '@/shared/errors/bad-request-error'
 import { NotFoundError } from '@/shared/errors/not-found-error' // Added for new test
 
 let payload: CreateCheckInDTO
-describe('Check-in test suite', () => {
+describe('Check-in Use Case test suite', () => {
   let inMemoryCheckInRepository: InMemoryCheckInRepository
   let inMemoryGymRepository: InMemoryGymRepository
   let sut: CheckInUseCase

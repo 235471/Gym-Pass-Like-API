@@ -13,14 +13,19 @@ export interface CreateUserDTO {
   passwordHash: string
 }
 
-// DTO para registrar usuários (usado pelo caso de uso)
+// DTO for user registration
 export interface RegisterUserDTO {
   name: string
   email: string
   password: string
 }
-// DTO para autenticar usuários (usado pelo caso de uso)
+// DTO for authentication
 export interface AuthenticateUserDTO {
   email: string
   password: string
+}
+
+// DTO get user metrics
+export interface UserMetricsDTO {
+  checkInsCount: number
 }

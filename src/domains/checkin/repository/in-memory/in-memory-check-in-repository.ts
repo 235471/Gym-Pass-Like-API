@@ -5,6 +5,7 @@ import { ICheckInRepository } from '../ICheckInRepository'
 import { randomUUID } from 'node:crypto'
 import { TooManyRequestsError } from '@/shared/errors/too-many-requests'
 import dayjs from 'dayjs'
+import { UserMetricsDTO } from '@/application/users/dtos/user-dto'
 
 export class InMemoryCheckInRepository implements ICheckInRepository {
   public items: CheckIn[] = []
@@ -53,5 +54,13 @@ export class InMemoryCheckInRepository implements ICheckInRepository {
       .slice((page - 1) * 20, page * 20)
 
     return right(checkInList)
+  }
+
+  async countByUserId(userId: string): Promise<Either<IError, UserMetricsDTO>> {
+    const checkInsCount = this.items.filter(
+      (item) => item.userId === userId,
+    ).length
+
+    return right({ checkInsCount })
   }
 }
