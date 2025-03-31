@@ -29,14 +29,13 @@ describe('Check-in test suite', () => {
       userLatitude: 51.5074,
       userLongitude: -0.1278,
     }
-
     gym = MakeGym({
       id: payload.gymId,
       latitude: new Decimal(51.5075),
       longitude: new Decimal(-0.1279),
     })
 
-    inMemoryGymRepository.items.push(gym)
+    inMemoryGymRepository.create(gym)
   })
 
   afterEach(() => {
@@ -75,9 +74,9 @@ describe('Check-in test suite', () => {
 
     await sut.execute(payload)
 
-    const result = await sut.execute(payload)
-
     vi.setSystemTime(new Date(2022, 0, 21, 10, 0, 0))
+
+    const result = await sut.execute(payload)
 
     if (result.isRight()) {
       const checkIn = result.value
@@ -86,15 +85,12 @@ describe('Check-in test suite', () => {
   })
 
   it('should not be able to check in at a distant gym', async () => {
-    inMemoryGymRepository.items = []
-
-    const distantGym = MakeGym({
-      id: payload.gymId,
+    const gym = MakeGym({
       latitude: new Decimal(51.5085),
       longitude: new Decimal(-0.1278),
     })
 
-    inMemoryGymRepository.items.push(distantGym)
+    await inMemoryGymRepository.create(gym)
 
     const result = await sut.execute(payload)
 
