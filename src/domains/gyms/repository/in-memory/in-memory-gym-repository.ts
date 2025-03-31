@@ -32,4 +32,15 @@ export class InMemoryGymRepository implements IGymRepository {
     }
     return right(gym)
   }
+
+  async searchManyByQuery(
+    query: string,
+    page: number,
+  ): Promise<Either<IError, Gym[]>> {
+    const gyms = this.items
+      .filter((item) => item.title.includes(query))
+      .slice((page - 1) * 20, page * 20)
+
+    return right(gyms)
+  }
 }

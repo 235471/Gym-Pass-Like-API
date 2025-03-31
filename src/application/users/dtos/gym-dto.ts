@@ -16,3 +16,8 @@ export interface RegisterGymDTO {
   latitude: number | Decimal
   longitude: number | Decimal
 }
+
+export interface QueryGymNameDTO {
+  title: string
+  page: number
+}
