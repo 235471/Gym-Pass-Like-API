@@ -9,4 +9,8 @@ export interface ICheckInRepository {
     userId: string,
     date: Date,
   ): Promise<Either<IError, CheckIn | null>>
+  findManyByUserId(
+    userId: string,
+    page: number,
+  ): Promise<Either<IError, CheckIn[]>>
 }

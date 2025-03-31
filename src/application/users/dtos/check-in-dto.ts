@@ -1,3 +1,5 @@
+import { CheckIn } from '@prisma/client'
+
 export interface CheckInDTO {
   id: string
   userId: string
@@ -11,4 +13,8 @@ export interface CreateCheckInDTO {
   gymId: string
   userLatitude: number
   userLongitude: number
+}
+
+export interface FetchCheckInHistoryDTO {
+  checkIns: CheckIn[]
 }

@@ -8,6 +8,7 @@ import dayjs from 'dayjs'
 
 export class InMemoryCheckInRepository implements ICheckInRepository {
   public items: CheckIn[] = []
+
   async create(
     data: Prisma.CheckInUncheckedCreateInput,
   ): Promise<Either<IError, CheckIn>> {
@@ -41,5 +42,16 @@ export class InMemoryCheckInRepository implements ICheckInRepository {
     } else {
       return left(new TooManyRequestsError())
     }
+  }
+
+  async findManyByUserId(
+    userId: string,
+    page: number,
+  ): Promise<Either<IError, CheckIn[]>> {
+    const checkInList = this.items
+      .filter((item) => item.userId === userId)
+      .slice((page - 1) * 20, page * 20)
+
+    return right(checkInList)
   }
 }
