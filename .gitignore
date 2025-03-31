@@ -151,4 +151,8 @@ explanation.MD
 
 # Coverage
 coverage/
+
+# RSA Keys
+private.key
+public.key
 # End of https://www.toptal.com/developers/gitignore/api/node
