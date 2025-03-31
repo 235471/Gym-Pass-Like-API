@@ -29,7 +29,7 @@ GymPass style app.
 - [x] A senha do usuário precisa estar criptografada;
 - [x] Os dados da aplicação precisam estar persistidos em um banco PostgreSQL;
 - [ ] Todas listas de dados precisam estar paginadas com 20 itens por página;
-- [ ] O usuário deve ser identificado por um JWT (JSON Web Token);
+- [x] O usuário deve ser identificado por um JWT (JSON Web Token) assinado com o algoritmo assimétrico RS256 para maior segurança;
 
 # API SOLID
 
@@ -46,6 +46,7 @@ Os testes unitários verificam:
 - Regras de negócio (como validação de email duplicado)
 - Transformação de dados (como hash de senha)
 - Fluxos de sucesso e erro
+Recentemente, os testes foram aprimorados para maior robustez, cobrindo mais cenários de borda e validações.
 
 ### Repositórios InMemory
 Implementamos repositórios em memória (InMemoryRepository) para cada entidade, simulando o comportamento dos repositórios reais sem a necessidade de um banco de dados. Isso permite:
@@ -68,6 +69,32 @@ Contém implementações concretas como repositórios, controllers, factories e 
 
 ### Shared
 Componentes compartilhados entre diferentes partes da aplicação, como utilities, erros e presenters.
+
+## Segurança
+
+A aplicação implementa várias camadas de segurança:
+
+### Autenticação com JWT RS256
+
+Utilizamos JSON Web Tokens (JWT) com o algoritmo de assinatura assimétrica RS256 para autenticação:
+
+- **Segurança Avançada**: Diferente do algoritmo simétrico HS256 (que usa uma única chave secreta), o RS256 utiliza um par de chaves público/privada.
+- **Assinatura Assimétrica**: A chave privada (guardada no servidor) assina o token, enquanto a chave pública pode verificar a autenticidade do token.
+- **Vantagens de Segurança**:
+  - Apenas o servidor precisa manter a chave privada segura
+  - Serviços externos podem verificar tokens usando apenas a chave pública
+  - Maior resistência a ataques de força bruta
+
+### Proteção de Senhas
+
+- Senhas são armazenadas utilizando hash bcrypt
+- Não armazenamos senhas em texto puro em nenhum momento
+- Comparações de senha são feitas de forma segura contra timing attacks
+
+### Validação de Dados
+
+- Todos os dados de entrada são validados usando schemas Zod
+- Validações incluem verificações de formato, tamanho e valores permitidos
 
 ## Tratamento de Erros
 
