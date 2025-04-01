@@ -4,6 +4,8 @@ import { Either, left, right } from '@/shared/utils/either'
 import { ICheckInRepository } from '@/domains/checkin/repository/ICheckInRepository'
 import { ValidateCheckInDTO, CheckInDTO } from '../dtos/check-in-dto'
 import { CheckIn } from '@prisma/client'
+import dayjs from 'dayjs'
+import { UnprocessableEntityError } from '@/shared/errors/unprocessable-entity'
 
 type ValidateCheckInUseCaseResponse = Either<IError, CheckInDTO>
 
@@ -24,6 +26,20 @@ export class ValidateCheckInUseCase {
     }
 
     const checkInData = checkIn.value as CheckIn
+
+    const distanceInMinutesFromCheckInCreation = dayjs(new Date()).diff(
+      checkInData.createdAt,
+      'minutes',
+    )
+
+    if (distanceInMinutesFromCheckInCreation > 20) {
+      return left(
+        new UnprocessableEntityError(
+          'Check-in can only be validated within 20 minutes of creation.',
+        ),
+      )
+    }
+
     checkInData.validateAt = new Date()
 
     await this.checkInRepository.save(checkInData)

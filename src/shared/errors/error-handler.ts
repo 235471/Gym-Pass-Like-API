@@ -48,6 +48,10 @@ export function handleError(error: IError, reply: FastifyReply): FastifyReply {
       status: 409,
       message: 'Resource already exists',
     },
+    UnprocessableEntityError: {
+      status: 422,
+      message: 'Unprocessable Entity',
+    },
     TooManyRequestsError: {
       status: 429,
       message: 'Too Many Requests',
