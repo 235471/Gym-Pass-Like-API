@@ -1,4 +1,8 @@
-import { GymDTO, RegisterGymDTO } from '@/application/users/dtos/gym-dto'
+import {
+  GymDTO,
+  RegisterGymDTO,
+  SearchNearbyGymDTO,
+} from '@/application/users/dtos/gym-dto'
 import { IGymRepository } from '../IGymRepository'
 import { IError } from '@/shared/errors/interfaces/error'
 import { NotFoundError } from '@/shared/errors/not-found-error'
@@ -6,6 +10,7 @@ import { Either, left, right } from '@/shared/utils/either'
 import { Gym } from '@prisma/client'
 import { Decimal } from '@prisma/client/runtime/library'
 import { randomUUID } from 'node:crypto'
+import { getDistanceBetweenCoordinates } from '@/shared/utils/get-distance-between-coordinates'
 
 export class InMemoryGymRepository implements IGymRepository {
   public items: Gym[] = []
@@ -42,5 +47,22 @@ export class InMemoryGymRepository implements IGymRepository {
       .slice((page - 1) * 20, page * 20)
 
     return right(gyms)
+  }
+
+  async findManyNearby(
+    data: SearchNearbyGymDTO,
+  ): Promise<Either<IError, Gym[]>> {
+    const nearbyGyms = this.items.filter((item) => {
+      const distance = getDistanceBetweenCoordinates(
+        { latitude: data.userLatitude, longitude: data.userLongitude },
+        {
+          latitude: item.latitude.toNumber(),
+          longitude: item.longitude.toNumber(),
+        },
+      )
+      return distance / 1000 < 10
+    })
+
+    return right(nearbyGyms)
   }
 }

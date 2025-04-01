@@ -21,3 +21,8 @@ export interface QueryGymNameDTO {
   title: string
   page: number
 }
+
+export interface SearchNearbyGymDTO {
+  userLatitude: number
+  userLongitude: number
+}
