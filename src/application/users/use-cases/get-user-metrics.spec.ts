@@ -13,7 +13,7 @@ describe('Get Users Metrics Use Case test suite', () => {
     sut = new GetUserMetricsUseCase(inMemoryCheckInRepository)
   })
 
-  it('should be able to get check-in count by use for metrics', async () => {
+  it('should return the correct check-in count for a user', async () => {
     const userId = randomUUID()
     for (let i = 0; i < 4; i++) {
       await inMemoryCheckInRepository.create(
@@ -33,6 +33,21 @@ describe('Get Users Metrics Use Case test suite', () => {
     if (result.isRight()) {
       const checkIns = result.value.checkInsCount
       expect(checkIns).toEqual(4)
+    }
+  })
+
+  it("should return 0 check-ins when a user haven't made any", async () => {
+    const userId = randomUUID()
+
+    const result = await sut.execute({
+      userId,
+    })
+
+    expect(result.isRight()).toBeTruthy()
+
+    if (result.isRight()) {
+      const checkIns = result.value.checkInsCount
+      expect(checkIns).toEqual(0)
     }
   })
 })

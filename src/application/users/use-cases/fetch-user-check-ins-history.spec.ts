@@ -13,7 +13,7 @@ describe('Fetch User Check In History Use Case test suite', () => {
     sut = new FetchUserCheckInsHistoryUseCase(inMemoryCheckInRepository)
   })
 
-  it('should be able to fetch check-in history', async () => {
+  it('should be able to fetch the first page of check-in history', async () => {
     const userId = randomUUID()
     for (let i = 0; i < 4; i++) {
       await inMemoryCheckInRepository.create(
@@ -47,7 +47,7 @@ describe('Fetch User Check In History Use Case test suite', () => {
     }
   })
 
-  it('should be able to fetch check-in history', async () => {
+  it('should be able to fetch the paginated check-in history (page 2)', async () => {
     const userId = randomUUID()
     for (let i = 0; i < 22; i++) {
       await inMemoryCheckInRepository.create(
