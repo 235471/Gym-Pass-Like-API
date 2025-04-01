@@ -14,7 +14,7 @@ type CheckInUseCaseResponse = Either<IError, CheckInDTO>
 export class CheckInUseCase {
   constructor(
     @inject('CheckInRepository') private checkInRepository: ICheckInRepository,
-    @inject('CheckInRepository') private gymRepository: IGymRepository,
+    @inject('GymRepository') private gymRepository: IGymRepository,
   ) {}
 
   async execute(data: CreateCheckInDTO): Promise<CheckInUseCaseResponse> {

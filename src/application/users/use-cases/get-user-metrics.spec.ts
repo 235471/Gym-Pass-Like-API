@@ -36,7 +36,7 @@ describe('Get Users Metrics Use Case test suite', () => {
     }
   })
 
-  it("should return 0 check-ins when a user haven't made any", async () => {
+  it('should return 0 if user has not made a check in', async () => {
     const userId = randomUUID()
 
     const result = await sut.execute({
