@@ -67,4 +67,21 @@ export async function userRoutes(app: FastifyInstance) {
     },
     handler: authController.register,
   })
+
+  app.get('/me', {
+    schema: {
+      summary: 'Get user profile',
+      description: 'Get user profile',
+      tags: ['users'],
+      response: {
+        200: z.object({}),
+        401: z.object({
+          statusCode: z.number(),
+          error: z.string(),
+          message: z.string(),
+        }),
+      },
+    },
+    handler: profileController.handle,
+  })
 }

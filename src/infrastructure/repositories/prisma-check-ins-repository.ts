@@ -6,6 +6,9 @@ import { IError } from '@/shared/errors/interfaces/error'
 import { InternalServerError } from '@/shared/errors/internal-server-error'
 import { CreateCheckInDTO } from '@/application/users/dtos/check-in-dto'
 import { ICheckInRepository } from '@/domains/checkin/repository/ICheckInRepository'
+import { UserMetricsDTO } from '@/application/users/dtos/user-dto'
+import dayjs from 'dayjs'
+import { NotFoundError } from '@/shared/errors/not-found-error'
 
 @injectable()
 export class PrismaCheckInRepository implements ICheckInRepository {
@@ -21,10 +24,88 @@ export class PrismaCheckInRepository implements ICheckInRepository {
     }
   }
 
-  findByUserIdOnDate(
+  async save(data: CheckIn): Promise<Either<IError, CheckIn>> {
+    try {
+      const updatedCheckIn = await prisma.checkIn.update({
+        where: { id: data.id },
+        data,
+      })
+
+      return right(updatedCheckIn)
+    } catch (error) {
+      return left(new InternalServerError('Error updating check in'))
+    }
+  }
+
+  async findById(id: string): Promise<Either<IError, CheckIn | null>> {
+    try {
+      const checkIn = await prisma.checkIn.findUnique({
+        where: { id },
+      })
+
+      if (!checkIn) {
+        return left(new NotFoundError('Check in not found'))
+      }
+
+      return right(checkIn)
+    } catch (error) {
+      return left(new InternalServerError('Error finding check in'))
+    }
+  }
+
+  async findManyByUserId(
+    userId: string,
+    page: number,
+  ): Promise<Either<IError, CheckIn[]>> {
+    try {
+      const checkIns = await prisma.checkIn.findMany({
+        where: { userId },
+        skip: (page - 1) * 20,
+        take: 20,
+      })
+
+      return right(checkIns)
+    } catch (error) {
+      return left(new InternalServerError('Error finding check ins'))
+    }
+  }
+
+  async findByUserIdOnDate(
     userId: string,
     date: Date,
   ): Promise<Either<IError, CheckIn | null>> {
-    throw new Error('Method not implemented.')
+    try {
+      const checkIn = await prisma.checkIn.findFirst({
+        where: {
+          userId,
+          createdAt: {
+            gte: dayjs(date).startOf('day').toDate(),
+            lte: dayjs(date).endOf('day').toDate(),
+          },
+        },
+      })
+
+      if (!checkIn) {
+        return left(new NotFoundError('Check in not found'))
+      }
+
+      return right(checkIn)
+    } catch (error) {
+      return left(new InternalServerError('Error finding check ins'))
+    }
+  }
+
+  async countByUserId(userId: string): Promise<Either<IError, UserMetricsDTO>> {
+    try {
+      const count = await prisma.checkIn.count({
+        where: { userId },
+      })
+
+      return right({
+        checkInsCount: count,
+      })
+    } catch (error) {
+      return left(new InternalServerError('Error counting check ins'))
+    }
   }
 }
