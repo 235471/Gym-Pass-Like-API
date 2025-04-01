@@ -12,6 +12,7 @@ import { SearchGymUseCase } from '@/application/users/use-cases/search-gym'
 import { FetchNearbyGymsUseCase } from '@/application/users/use-cases/fetch-nearby-gyms'
 import { GetUserMetricsUseCase } from '@/application/users/use-cases/get-user-metrics'
 import { FetchUserCheckInsHistoryUseCase } from '@/application/users/use-cases/fetch-user-check-ins-history'
+import { ValidateCheckInUseCase } from '@/application/users/use-cases/validate-check-in'
 
 // Registering Repositories
 container.registerSingleton<IUserRepository>(
@@ -32,7 +33,7 @@ container.registerSingleton(
   FetchUserCheckInsHistoryUseCase.name,
   FetchUserCheckInsHistoryUseCase,
 )
-
+container.registerSingleton(ValidateCheckInUseCase.name, ValidateCheckInUseCase)
 // Registering Controllers
 container.registerSingleton(UserRegisterController.name, UserRegisterController)
 container.registerSingleton(AuthenticateController.name, AuthenticateController)

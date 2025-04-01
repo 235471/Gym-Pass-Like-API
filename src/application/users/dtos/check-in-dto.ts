@@ -18,3 +18,7 @@ export interface CreateCheckInDTO {
 export interface FetchCheckInHistoryDTO {
   checkIns: CheckIn[]
 }
+
+export interface ValidateCheckInDTO {
+  id: string
+}

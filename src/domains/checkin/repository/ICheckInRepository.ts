@@ -6,6 +6,8 @@ import { UserMetricsDTO } from '@/application/users/dtos/user-dto'
 
 export interface ICheckInRepository {
   create(data: CreateCheckInDTO): Promise<Either<IError, CheckIn>>
+  save(checkIn: CheckIn): Promise<Either<IError, CheckIn>>
+  findById(id: string): Promise<Either<IError, CheckIn | null>>
   findByUserIdOnDate(
     userId: string,
     date: Date,

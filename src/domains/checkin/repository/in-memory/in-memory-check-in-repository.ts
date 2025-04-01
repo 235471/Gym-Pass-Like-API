@@ -6,6 +6,7 @@ import { randomUUID } from 'node:crypto'
 import { TooManyRequestsError } from '@/shared/errors/too-many-requests'
 import dayjs from 'dayjs'
 import { UserMetricsDTO } from '@/application/users/dtos/user-dto'
+import { NotFoundError } from '@/shared/errors/not-found-error'
 
 export class InMemoryCheckInRepository implements ICheckInRepository {
   public items: CheckIn[] = []
@@ -21,6 +22,14 @@ export class InMemoryCheckInRepository implements ICheckInRepository {
       validateAt: data.validateAt ? new Date(data.validateAt) : null,
     }
     this.items.push(checkIn)
+    return right(checkIn)
+  }
+
+  async save(checkIn: CheckIn): Promise<Either<IError, CheckIn>> {
+    const checkInIndex = this.items.findIndex((item) => item.id === checkIn.id)
+    if (checkInIndex >= 0) {
+      this.items[checkInIndex] = checkIn
+    }
     return right(checkIn)
   }
 
@@ -43,6 +52,14 @@ export class InMemoryCheckInRepository implements ICheckInRepository {
     } else {
       return left(new TooManyRequestsError())
     }
+  }
+
+  async findById(id: string): Promise<Either<IError, CheckIn | null>> {
+    const checkIn = this.items.find((item) => item.id === id)
+    if (!checkIn) {
+      return left(new NotFoundError())
+    }
+    return right(checkIn)
   }
 
   async findManyByUserId(
