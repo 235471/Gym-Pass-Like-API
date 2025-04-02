@@ -1,6 +1,6 @@
 import { IUserRepository } from '@/domains/users/repository/IUserRepository'
 import { injectable, inject } from 'tsyringe'
-import { UserDTO } from '../dtos/user-dto'
+import { UserProfileDTO } from '../dtos/user-dto'
 import { IError } from '@/shared/errors/interfaces/error'
 import { Either, left, right } from '@/shared/utils/either'
 import { UserMapper } from '@/shared/utils/user-mapper'
@@ -9,7 +9,8 @@ import { NotFoundError } from '@/shared/errors/not-found-error'
 type GetUserProfileUseCaseRequest = {
   userId: string
 }
-type GetUserProfileUseCaseResponse = Either<IError, UserDTO>
+
+type GetUserProfileUseCaseResponse = Either<IError, UserProfileDTO>
 
 @injectable()
 export class GetUserProfileUseCase {
@@ -30,6 +31,6 @@ export class GetUserProfileUseCase {
       return left(new NotFoundError())
     }
 
-    return right(UserMapper.toDTO(userResult.value))
+    return right(UserMapper.toProfileDTO(userResult.value))
   }
 }

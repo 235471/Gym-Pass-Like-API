@@ -12,6 +12,16 @@ export const swaggerConfig = {
       { name: 'gyms', description: 'Gym related endpoints' },
       { name: 'check-ins', description: 'Check-in related endpoints' },
     ],
+    // Add components section to define security schemes
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: 'http' as 'http', // Explicitly cast type to literal 'http'
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
+        },
+      },
+    },
   },
 }
 

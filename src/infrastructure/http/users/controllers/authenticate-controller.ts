@@ -23,7 +23,9 @@ export class AuthenticateController {
         return handleError(result.value, reply)
       }
 
-      return reply.status(200).send()
+      // Return the access token in the response body
+      const { accessToken } = result.value
+      return reply.status(200).send({ accessToken })
     } catch (error) {
       return handleError(
         new InternalServerError(

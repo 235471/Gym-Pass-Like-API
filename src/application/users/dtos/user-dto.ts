@@ -7,6 +7,15 @@ export interface UserDTO {
   updatedAt?: Date | null
 }
 
+// DTO for user profile response (excludes password)
+export interface UserProfileDTO {
+  id: string
+  name: string
+  email: string
+  createdAt: Date
+  updatedAt?: Date | null
+}
+
 export interface CreateUserDTO {
   name: string
   email: string

@@ -1,5 +1,7 @@
 @baseUrl = http://localhost:3333
+@authToken = {{authentication.response.body.accessToken}}
 
+# @name create_account
 POST {{baseUrl}}/users
 Content-Type: application/json
 
@@ -10,6 +12,7 @@ Content-Type: application/json
 }
 
 ###
+# @name authentication
 POST {{baseUrl}}/users/auth
 Content-Type: application/json
 
@@ -17,3 +20,8 @@ Content-Type: application/json
     "email": "testemail@example.com",
     "password": "#Test123"
 }
+
+###
+# @name get_user_profile
+GET {{baseUrl}}/users/me
+Authorization: Bearer {{authToken}}
