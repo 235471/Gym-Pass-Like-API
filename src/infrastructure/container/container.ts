@@ -18,6 +18,7 @@ import { PrismaCheckInRepository } from '../repositories/prisma-check-ins-reposi
 import { AuthenticateController } from '../http/users/controllers/authenticate-controller'
 import { UserRegisterController } from '../http/users/controllers/user-register-controller'
 import { ProfileController } from '../http/users/controllers/profile'
+import { AuthenticateService } from '@/application/users/services/authenticate-service'
 
 // Registering Repositories
 container.registerSingleton<IUserRepository>(
@@ -47,6 +48,9 @@ container.registerSingleton(
   FetchUserCheckInsHistoryUseCase,
 )
 container.registerSingleton(ValidateCheckInUseCase.name, ValidateCheckInUseCase)
+
+// Registering Services
+container.registerSingleton(AuthenticateService.name, AuthenticateService)
 
 // Registering Controllers
 container.registerSingleton(UserRegisterController.name, UserRegisterController)

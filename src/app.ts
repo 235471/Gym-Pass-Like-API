@@ -12,6 +12,7 @@ import fastifyJwt from '@fastify/jwt'
 import { env } from '@/env'
 import { swaggerConfig, swaggerUiConfig } from './infrastructure/config/swagger'
 import { userRoutes } from './infrastructure/http/users/routes/user-routes'
+import { setupAuthMiddleware } from './infrastructure/http/middlewares/auth-middleware'
 import './infrastructure/container/container'
 
 // Create fastify instance with Zod type provider
@@ -40,6 +41,9 @@ app.register(fastifyJwt, {
     algorithm: 'RS256',
   },
 })
+
+// Configurar middleware de autenticação global
+setupAuthMiddleware(app)
 
 app.get('/', () => {
   return 'Gympass like API with SOLID principles'

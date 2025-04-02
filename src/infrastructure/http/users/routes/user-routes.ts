@@ -1,7 +1,6 @@
 import { FastifyInstance } from 'fastify'
 import { makeUserController } from '@/infrastructure/factories/makeUserController'
 import { makeAuthController } from '@/infrastructure/factories/makeAuthController'
-import { verifyJWT } from '../../middlewares/verify-jwt' // Import verifyJWT middleware
 import { z } from 'zod'
 import { makeProfileController } from '@/infrastructure/factories/makeProfileController'
 
@@ -9,7 +8,7 @@ export async function userRoutes(app: FastifyInstance) {
   const userController = makeUserController()
   const authController = makeAuthController()
   const profileController = makeProfileController()
-  
+
   app.post('/', {
     schema: {
       summary: 'Register a new user',
@@ -73,13 +72,12 @@ export async function userRoutes(app: FastifyInstance) {
     handler: authController.register,
   })
 
-  app.get("/me", {
-    onRequest: [verifyJWT], // Apply middleware here
+  app.get('/me', {
     schema: {
-      summary: "Get user profile",
-      description: "Get user profile",
-      tags: ["users"],
-      security: [{ bearerAuth: [] }], // Indicate JWT is required for Swagger
+      summary: 'Get user profile',
+      description: 'Get user profile',
+      tags: ['users'],
+      security: [{ bearerAuth: [] }], // Indica que JWT é necessário para Swagger
       response: {
         200: z.object({
           user: z.object({
@@ -97,7 +95,6 @@ export async function userRoutes(app: FastifyInstance) {
         }),
       },
     },
-    // No longer need .bind() as handle is now an arrow function property
     handler: profileController.handle,
-  });
+  })
 }

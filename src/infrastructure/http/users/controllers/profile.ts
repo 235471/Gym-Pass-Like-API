@@ -17,8 +17,6 @@ export class ProfileController {
     try {
       // The verifyJWT middleware ensures request.user exists and has the user ID in 'sub'
       const userId = request.user.sub
-      console.log('userId:', userId)
-      console.log('getUserProfileUseCase:', this.getUserProfileUseCase)
 
       const result = await this.getUserProfileUseCase.execute({
         userId,
