@@ -12,6 +12,8 @@ import { ValidateCheckInUseCase } from '@/application/users/use-cases/validate-c
 import { IUserRepository } from '@/domains/users/repository/IUserRepository'
 import { IGymRepository } from '@/domains/gyms/repository/IGymRepository'
 import { ICheckInRepository } from '@/domains/checkin/repository/ICheckInRepository'
+import { PrismaClient } from '@prisma/client'
+import { prisma } from '../database/prisma'
 import { PrismaUserRepository } from '../repositories/prisma-users-repository'
 import { PrismaGymsRepository } from '../repositories/prisma-gyms-repository'
 import { PrismaCheckInRepository } from '../repositories/prisma-check-ins-repository'
@@ -33,6 +35,9 @@ container.registerSingleton<ICheckInRepository>(
   'CheckInRepository',
   PrismaCheckInRepository,
 )
+
+// Register the global PrismaClient instance so repositories can inject it
+container.register<PrismaClient>(PrismaClient, { useValue: prisma })
 
 // Registering Use Cases
 container.registerSingleton(RegisterUserUseCase.name, RegisterUserUseCase)
