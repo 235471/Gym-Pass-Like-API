@@ -8,12 +8,18 @@ import { Either, left, right } from '@/shared/utils/either'
 import { Gym, Prisma } from '@prisma/client'
 import { InternalServerError } from '@/shared/errors/internal-server-error'
 import { NotFoundError } from '@/shared/errors/not-found-error'
-import { prisma } from '../database/prisma'
+import { PrismaClient } from '@prisma/client'
+import { injectable, inject } from 'tsyringe'
 
+@injectable()
 export class PrismaGymsRepository implements IGymRepository {
+  constructor(
+    @inject(PrismaClient) private prisma: PrismaClient,
+  ) {}
+
   async create(data: RegisterGymDTO): Promise<Either<IError, Gym>> {
     try {
-      const gym = await prisma.gym.create({
+      const gym = await this.prisma.gym.create({
         data,
       })
       return right(gym)
@@ -24,7 +30,7 @@ export class PrismaGymsRepository implements IGymRepository {
 
   async findById(id: string): Promise<Either<IError, Gym | null>> {
     try {
-      const gym = await prisma.gym.findUnique({
+      const gym = await this.prisma.gym.findUnique({
         where: { id },
       })
 
@@ -42,7 +48,8 @@ export class PrismaGymsRepository implements IGymRepository {
     data: SearchNearbyGymDTO,
   ): Promise<Either<IError, Gym[]>> {
     try {
-      const gyms = await prisma.$queryRaw<Gym[]>(
+      // Use the injected prisma client for raw queries too
+      const gyms = await this.prisma.$queryRaw<Gym[]>(
         Prisma.sql`
           SELECT * FROM gyms
           WHERE (6371 * acos(cos(radians(${data.userLatitude})) * cos(radians(latitude))
@@ -62,7 +69,7 @@ export class PrismaGymsRepository implements IGymRepository {
     page: number,
   ): Promise<Either<IError, Gym[]>> {
     try {
-      const gyms = await prisma.gym.findMany({
+      const gyms = await this.prisma.gym.findMany({
         where: {
           title: {
             contains: query,

@@ -1,6 +1,5 @@
-import { prisma } from '@/infrastructure/database/prisma'
-import { CheckIn } from '@prisma/client'
-import { injectable } from 'tsyringe'
+import { CheckIn, PrismaClient } from '@prisma/client'
+import { injectable, inject } from 'tsyringe'
 import { Either, left, right } from '@/shared/utils/either'
 import { IError } from '@/shared/errors/interfaces/error'
 import { InternalServerError } from '@/shared/errors/internal-server-error'
@@ -12,9 +11,13 @@ import { NotFoundError } from '@/shared/errors/not-found-error'
 
 @injectable()
 export class PrismaCheckInRepository implements ICheckInRepository {
+  constructor(
+    @inject(PrismaClient) private prisma: PrismaClient,
+  ) {}
+
   async create(data: CreateCheckInDTO): Promise<Either<IError, CheckIn>> {
     try {
-      const checkIn = await prisma.checkIn.create({
+      const checkIn = await this.prisma.checkIn.create({
         data,
       })
 
@@ -26,7 +29,7 @@ export class PrismaCheckInRepository implements ICheckInRepository {
 
   async save(data: CheckIn): Promise<Either<IError, CheckIn>> {
     try {
-      const updatedCheckIn = await prisma.checkIn.update({
+      const updatedCheckIn = await this.prisma.checkIn.update({
         where: { id: data.id },
         data,
       })
@@ -39,7 +42,7 @@ export class PrismaCheckInRepository implements ICheckInRepository {
 
   async findById(id: string): Promise<Either<IError, CheckIn | null>> {
     try {
-      const checkIn = await prisma.checkIn.findUnique({
+      const checkIn = await this.prisma.checkIn.findUnique({
         where: { id },
       })
 
@@ -58,7 +61,7 @@ export class PrismaCheckInRepository implements ICheckInRepository {
     page: number,
   ): Promise<Either<IError, CheckIn[]>> {
     try {
-      const checkIns = await prisma.checkIn.findMany({
+      const checkIns = await this.prisma.checkIn.findMany({
         where: { userId },
         skip: (page - 1) * 20,
         take: 20,
@@ -75,7 +78,7 @@ export class PrismaCheckInRepository implements ICheckInRepository {
     date: Date,
   ): Promise<Either<IError, CheckIn | null>> {
     try {
-      const checkIn = await prisma.checkIn.findFirst({
+      const checkIn = await this.prisma.checkIn.findFirst({
         where: {
           userId,
           createdAt: {
@@ -97,7 +100,7 @@ export class PrismaCheckInRepository implements ICheckInRepository {
 
   async countByUserId(userId: string): Promise<Either<IError, UserMetricsDTO>> {
     try {
-      const count = await prisma.checkIn.count({
+      const count = await this.prisma.checkIn.count({
         where: { userId },
       })
 

@@ -10,7 +10,7 @@
     "lint": "eslint src --ext .ts",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:e2e": "vitest run -c vitest.config.e2e.ts",
+    "test:e2e": "NODE_ENV=test vitest run -c vitest.config.e2e.ts",
     "test:coverage": "vitest run --coverage",
     "test:ui": "vitest --ui"
   },
