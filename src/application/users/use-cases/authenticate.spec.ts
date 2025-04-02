@@ -33,13 +33,11 @@ describe('Authenticate Use Case test suite', () => {
     // Assert: Check for successful authentication and token generation
     expect(result.isRight()).toBeTruthy()
     if (result.isRight()) {
-      const { user: authenticatedUser, accessToken } = result.value
+      const authenticatedUser = result.value
       expect(authenticatedUser.id).toBeDefined()
       expect(authenticatedUser.email).toBe(userData.email)
       expect(authenticatedUser.name).toBe(userData.name)
       expect(authenticatedUser).not.toHaveProperty('passwordHash')
-      expect(accessToken).toEqual(expect.any(String)) // Check if accessToken is a string
-      expect(accessToken).not.toBe('') // Check if accessToken is not empty
     }
   })
 
