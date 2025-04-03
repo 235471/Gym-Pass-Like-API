@@ -5,17 +5,14 @@ import {
 import { IGymRepository } from '@/domains/gyms/repository/IGymRepository'
 import { IError } from '@/shared/errors/interfaces/error'
 import { Either, left, right } from '@/shared/utils/either'
-import { Gym, Prisma } from '@prisma/client'
+import { Gym, Prisma, PrismaClient } from '@prisma/client'
 import { InternalServerError } from '@/shared/errors/internal-server-error'
 import { NotFoundError } from '@/shared/errors/not-found-error'
-import { PrismaClient } from '@prisma/client'
 import { injectable, inject } from 'tsyringe'
 
 @injectable()
 export class PrismaGymsRepository implements IGymRepository {
-  constructor(
-    @inject(PrismaClient) private prisma: PrismaClient,
-  ) {}
+  constructor(@inject(PrismaClient) private prisma: PrismaClient) {}
 
   async create(data: RegisterGymDTO): Promise<Either<IError, Gym>> {
     try {

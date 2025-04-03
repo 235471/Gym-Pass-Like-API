@@ -16,7 +16,7 @@ export const swaggerConfig = {
     components: {
       securitySchemes: {
         bearerAuth: {
-          type: 'http' as 'http', // Explicitly cast type to literal 'http'
+          type: 'http' as const, // Explicitly cast type to literal 'http'
           scheme: 'bearer',
           bearerFormat: 'JWT',
         },

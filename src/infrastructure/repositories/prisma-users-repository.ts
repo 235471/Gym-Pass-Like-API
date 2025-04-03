@@ -1,5 +1,5 @@
 import { IUserRepository } from '@/domains/users/repository/IUserRepository'
-import { PrismaClient, User } from '@prisma/client' 
+import { PrismaClient, User } from '@prisma/client'
 import { injectable, inject } from 'tsyringe'
 import { Either, left, right } from '@/shared/utils/either'
 import { IError } from '@/shared/errors/interfaces/error'
@@ -8,9 +8,7 @@ import { CreateUserDTO } from '@/application/users/dtos/user-dto'
 
 @injectable()
 export class PrismaUserRepository implements IUserRepository {
-  constructor(
-    @inject(PrismaClient) private prisma: PrismaClient,
-  ) {}
+  constructor(@inject(PrismaClient) private prisma: PrismaClient) {}
 
   async create(data: CreateUserDTO): Promise<Either<IError, User>> {
     try {

@@ -11,9 +11,7 @@ import { NotFoundError } from '@/shared/errors/not-found-error'
 
 @injectable()
 export class PrismaCheckInRepository implements ICheckInRepository {
-  constructor(
-    @inject(PrismaClient) private prisma: PrismaClient,
-  ) {}
+  constructor(@inject(PrismaClient) private prisma: PrismaClient) {}
 
   async create(data: CreateCheckInDTO): Promise<Either<IError, CheckIn>> {
     try {

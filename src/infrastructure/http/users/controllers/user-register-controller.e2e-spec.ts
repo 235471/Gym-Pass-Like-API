@@ -15,13 +15,11 @@ describe('User Register (E2E)', () => {
   })
 
   it('should be able to register a new user', async () => {
-    const response = await request(app.server)
-      .post('/users')
-      .send({
-        name: faker.person.fullName(),
-        email: faker.internet.email(),
-        password: 'ValidP@ssw0rd', // Use a password that meets the schema criteria
-      })
+    const response = await request(app.server).post('/users').send({
+      name: faker.person.fullName(),
+      email: faker.internet.email(),
+      password: 'ValidP@ssw0rd', // Use a password that meets the schema criteria
+    })
 
     expect(response.statusCode).toEqual(201)
   })
@@ -38,20 +36,18 @@ describe('User Register (E2E)', () => {
     })
 
     // Attempt second registration with the same email
-    const response = await request(app.server)
-      .post('/users')
-      .send({
-        name: faker.person.fullName(),
-        email, // Same email
-        password,
-       })
+    const response = await request(app.server).post('/users').send({
+      name: faker.person.fullName(),
+      email, // Same email
+      password,
+    })
 
-     expect(response.body).toEqual(
-       expect.objectContaining({
-         statusCode: 409,
-         error: 'ConflictError', // Match the actual error name
-         message: expect.stringContaining('is already in use'), // Check for the static part of the message
-       }),
-     )
-   })
- })
+    expect(response.body).toEqual(
+      expect.objectContaining({
+        statusCode: 409,
+        error: 'ConflictError', // Match the actual error name
+        message: expect.stringContaining('is already in use'), // Check for the static part of the message
+      }),
+    )
+  })
+})

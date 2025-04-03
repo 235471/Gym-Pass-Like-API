@@ -1,9 +1,9 @@
-import 'reflect-metadata' 
+import 'reflect-metadata'
 import { config } from 'dotenv'
 import { PrismaClient } from '@prisma/client'
 import { randomUUID } from 'node:crypto'
 import { execSync } from 'node:child_process'
-import { container } from 'tsyringe' 
+import { container } from 'tsyringe'
 
 // Import Repository Interfaces and Implementations
 import { IUserRepository } from '@/domains/users/repository/IUserRepository'
