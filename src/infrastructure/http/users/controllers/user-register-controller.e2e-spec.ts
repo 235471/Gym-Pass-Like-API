@@ -1,6 +1,5 @@
 import request from 'supertest'
 import { app } from '@/app'
-import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import { faker } from '@faker-js/faker'
 
 describe('User Register (E2E)', () => {
