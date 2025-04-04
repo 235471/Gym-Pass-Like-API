@@ -14,12 +14,13 @@ export async function gymRoutes(app: FastifyInstance) {
 
   // Register Gym Route (POST /)
   app.post(
-    "/",
+    '/',
     {
       schema: {
-        summary: "Register a new gym",
-        description: "Creates a new gym",
-        tags: ["gyms"],
+        summary: 'Register a new gym',
+        description: 'Creates a new gym',
+        tags: ['gyms'],
+        security: [{ bearerAuth: [] }],
         body: z.object({
           title: z.string(),
           description: z.string().optional().nullable(),
@@ -32,12 +33,12 @@ export async function gymRoutes(app: FastifyInstance) {
             id: z.string().uuid(),
           }),
           400: z.object({
-            error: z.literal("ValidationError"),
+            error: z.literal('ValidationError'),
             message: z.array(
               z.object({
                 field: z.string(),
                 message: z.string(),
-              })
+              }),
             ),
           }),
           500: z.object({
@@ -48,8 +49,8 @@ export async function gymRoutes(app: FastifyInstance) {
         },
       },
     },
-    gymController.register
-  );
+    gymController.register,
+  )
 
   // Search Gyms Route (GET /search)
   app.get(
@@ -59,6 +60,7 @@ export async function gymRoutes(app: FastifyInstance) {
         summary: 'Search for gyms',
         description: 'Searches gyms by title',
         tags: ['gyms'],
+        security: [{ bearerAuth: [] }],
         querystring: z.object({
           query: z.string(),
           page: z.coerce.number().default(1),
@@ -99,6 +101,7 @@ export async function gymRoutes(app: FastifyInstance) {
         summary: 'Fetch nearby gyms',
         description: 'Fetches gyms within 10km radius',
         tags: ['gyms'],
+        security: [{ bearerAuth: [] }],
         querystring: z.object({
           latitude: z.coerce.number(),
           longitude: z.coerce.number(),
@@ -139,6 +142,7 @@ export async function gymRoutes(app: FastifyInstance) {
         summary: 'Create a check-in for a specific gym',
         description: 'Registers a user check-in at the specified gym',
         tags: ['check-ins'],
+        security: [{ bearerAuth: [] }],
         params: z.object({
           gymId: z.string().uuid(),
         }),

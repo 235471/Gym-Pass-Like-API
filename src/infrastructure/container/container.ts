@@ -20,7 +20,6 @@ import { PrismaGymsRepository } from '../repositories/prisma-gyms-repository'
 import { PrismaCheckInRepository } from '../repositories/prisma-check-ins-repository'
 import { AuthenticateController } from '../http/users/controllers/authenticate-controller'
 import { UserRegisterController } from '../http/users/controllers/user-register-controller'
-import { ProfileController } from '../http/users/controllers/profile'
 import { GymRegisterController } from '../http/gyms/controllers/gym-register'
 import { GymSearchController } from '../http/gyms/controllers/gym-search'
 import { GymNearbyController } from '../http/gyms/controllers/gym-nearby'
@@ -28,6 +27,7 @@ import { CheckInCreateController } from '../http/check-ins/controllers/check-in-
 import { CheckInHistoryController } from '../http/check-ins/controllers/check-in-history'
 import { CheckInMetricsController } from '../http/check-ins/controllers/check-in-metrics'
 import { CheckInValidateController } from '../http/check-ins/controllers/check-in-validate'
+import { ProfileController } from '../http/users/controllers/profile-controller'
 // Registering Repositories
 container.registerSingleton<IUserRepository>(
   'UserRepository',

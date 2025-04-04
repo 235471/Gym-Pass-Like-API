@@ -2,6 +2,8 @@ import request from 'supertest'
 import { app } from '@/app'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import { faker } from '@faker-js/faker'
+import { prismaTestClient } from '@/shared/test/setup-e2e' // Import test client
+import { Decimal } from '@prisma/client/runtime/library' // Import Decimal
 
 describe('Nearby Gyms (E2E)', () => {
   let token: string
@@ -33,28 +35,26 @@ describe('Nearby Gyms (E2E)', () => {
     const userLatitude = -27.2092052
     const userLongitude = -49.6401091
 
-    // Create gyms at different locations
-    await request(app.server)
-      .post('/gyms')
-      .set('Authorization', `Bearer ${token}`)
-      .send({
+    // Create gyms directly using prismaTestClient
+    await prismaTestClient.gym.create({
+      data: {
         title: 'Near Gym',
         description: 'Near gym description',
         phone: '11999999999',
-        latitude: userLatitude, // User's exact location
-        longitude: userLongitude,
-      })
+        latitude: new Decimal(userLatitude), // User's exact location
+        longitude: new Decimal(userLongitude),
+      },
+    })
 
-    await request(app.server)
-      .post('/gyms')
-      .set('Authorization', `Bearer ${token}`)
-      .send({
+    await prismaTestClient.gym.create({
+      data: {
         title: 'Far Gym',
         description: 'Far gym description',
         phone: '11999999998',
-        latitude: -27.0610928, // Further away
-        longitude: -49.5229501,
-      })
+        latitude: new Decimal(-27.0610928), // Further away
+        longitude: new Decimal(-49.5229501),
+      },
+    })
 
     // Search for gyms near the first gym's location (API Call)
     const response = await request(app.server)

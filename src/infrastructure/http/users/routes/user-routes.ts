@@ -77,7 +77,7 @@ export async function userRoutes(app: FastifyInstance) {
       summary: 'Get user profile',
       description: 'Get user profile',
       tags: ['users'],
-      security: [{ bearerAuth: [] }], // Indica que JWT é necessário para Swagger
+      security: [{ bearerAuth: [] }],
       response: {
         200: z.object({
           user: z.object({

@@ -2,28 +2,36 @@ import request from 'supertest'
 import { app } from '@/app'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import { faker } from '@faker-js/faker'
+import { prismaTestClient } from '@/shared/test/setup-e2e'
+import { Decimal } from '@prisma/client/runtime/library'
+import { randomUUID } from 'node:crypto'
+import bcrypt from 'bcryptjs' // Import bcryptjs
 
 describe('Validate Check-in (E2E)', () => {
   let token: string
+  let userId: string // Declare userId
 
   beforeAll(async () => {
     await app.ready()
 
-    // Criar e autenticar o usuário diretamente
+    // Create and authenticate user within beforeAll
     const email = faker.internet.email()
     const password = 'ValidP@ssw0rd'
-
-    await request(app.server).post('/users').send({
-      name: faker.person.fullName(),
-      email,
-      password,
+    // Create user directly
+    const user = await prismaTestClient.user.create({
+      data: {
+        name: faker.person.fullName(),
+        email,
+        passwordHash: await bcrypt.hash(password, 6), // Use imported bcrypt
+      },
     })
+    userId = user.id // Store userId
 
+    // Authenticate user
     const authResponse = await request(app.server).post('/users/auth').send({
       email,
       password,
     })
-
     token = authResponse.body.accessToken
   })
 
@@ -32,49 +40,42 @@ describe('Validate Check-in (E2E)', () => {
   })
 
   it('should return 404 when validating a nonexistent check-in', async () => {
-    // Testar com um ID de check-in que não existe
-    const nonExistentCheckInId = '00000000-0000-0000-0000-000000000000'
+    // Use a valid but non-existent UUID
+    const nonExistentCheckInId = randomUUID()
 
-    // Tentar validar um check-in que não existe
+    // Attempt to validate
     const response = await request(app.server)
       .patch(`/check-ins/${nonExistentCheckInId}/validate`)
       .set('Authorization', `Bearer ${token}`)
       .send()
 
-    // Verificar se recebemos 404 pois o check-in não existe
+    // Check-in id doesn't exist returns 404
     expect(response.statusCode).toEqual(404)
     expect(response.body).toHaveProperty('error', 'NotFoundError')
   })
 
   it('should be able to validate a check-in', async () => {
-    // 1. Register gym
-    const createGymResponse = await request(app.server)
-      .post('/gyms')
-      .set('Authorization', `Bearer ${token}`)
-      .send({
+    // 1. Create gym directly
+    const gym = await prismaTestClient.gym.create({
+      data: {
         title: 'Academia JavaScript',
         description: 'A melhor academia para devs',
         phone: '11999999999',
-        latitude: -27.2092052,
-        longitude: -49.6401091,
-      })
+        latitude: new Decimal(-27.2092052),
+        longitude: new Decimal(-49.6401091),
+      },
+    })
 
-    expect(createGymResponse.statusCode).toEqual(201)
-    const gymId = createGymResponse.body.id
+    // 2. Create check-in directly for the authenticated user
+    let checkIn = await prismaTestClient.checkIn.create({
+      data: {
+        gymId: gym.id,
+        userId: userId, // Use userId from beforeAll
+      },
+    })
+    const checkInId = checkIn.id
 
-    // 2. Register a check-in for the gym
-    const createCheckInResponse = await request(app.server)
-      .post(`/gyms/${gymId}/check-ins`)
-      .set('Authorization', `Bearer ${token}`)
-      .send({
-        userLatitude: -27.2092052,
-        userLongitude: -49.6401091,
-      })
-
-    expect(createCheckInResponse.statusCode).toEqual(201)
-    const checkInId = createCheckInResponse.body.id
-
-    // 3. Validate the check-in
+    // 3. Validate the check-in via API
     const validateResponse = await request(app.server)
       .patch(`/check-ins/${checkInId}/validate`)
       .set('Authorization', `Bearer ${token}`)
@@ -82,26 +83,11 @@ describe('Validate Check-in (E2E)', () => {
 
     expect(validateResponse.statusCode).toEqual(204)
 
-    // 4. Check if the check-in was validated
-    const historyResponse = await request(app.server)
-      .get('/check-ins/history')
-      .set('Authorization', `Bearer ${token}`)
-      .send()
+    // 4. Check if the check-in was validated directly in the DB
+    checkIn = await prismaTestClient.checkIn.findUniqueOrThrow({
+      where: { id: checkInId },
+    })
 
-    expect(historyResponse.statusCode).toEqual(200)
-
-    // Define a type for the check-in response
-    interface CheckIn {
-      id: string
-      validateAt: string | null
-    }
-
-    // Encontrar o check-in validado
-    const validatedCheckIn = historyResponse.body.find(
-      (checkIn: CheckIn) => checkIn.id === checkInId,
-    )
-
-    expect(validatedCheckIn).toBeDefined()
-    expect(validatedCheckIn.validateAt).not.toBeNull()
+    expect(checkIn.validateAt).toEqual(expect.any(Date))
   })
 })

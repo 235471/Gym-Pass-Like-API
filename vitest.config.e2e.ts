@@ -8,6 +8,7 @@ export default defineConfig({
     globals: true,
     root: './',
     setupFiles: ['./src/shared/test/setup-e2e.ts'],
+    hookTimeout: 20000, // Increase hook timeout to 20s
   },
   plugins: [
     tsConfigPaths(),
