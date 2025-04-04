@@ -8,6 +8,11 @@ export interface CheckInDTO {
   validateAt: Date | null
 }
 
+export interface CreateCheckInDTO {
+  userId: string
+  gymId: string
+}
+
 export interface CreateCheckInUseCaseDTO {
   userId: string
   gymId: string

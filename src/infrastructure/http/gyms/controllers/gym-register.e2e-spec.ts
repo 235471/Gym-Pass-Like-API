@@ -20,7 +20,7 @@ describe('Register Gym (E2E)', () => {
       email,
       password,
     })
-    token = authResponse.body.accessToken // Correct property name
+    token = authResponse.body.accessToken
   })
 
   afterAll(async () => {
@@ -28,16 +28,13 @@ describe('Register Gym (E2E)', () => {
   })
 
   it('should be able to register a gym', async () => {
-    // Use the token obtained in beforeAll
-    // const { token } = await createAndAuthenticateUser(app) // Remove helper call
-
     const response = await request(app.server)
       .post('/gyms')
-      .set('Authorization', `Bearer ${token}`) // Assuming auth is required
+      .set('Authorization', `Bearer ${token}`)
       .send({
         title: 'JavaScript Gym',
         description: 'Some description.',
-        phone: '(11) 98888-7777', // Valid format
+        phone: '(11) 98888-7777',
         latitude: -27.2092052,
         longitude: -49.6401091,
       })

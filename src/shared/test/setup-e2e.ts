@@ -91,3 +91,6 @@ afterAll(async () => {
     await cleanupPrisma.$disconnect()
   }
 })
+
+// Export the test Prisma client for use in tests
+export { testPrismaClient as prismaTestClient }

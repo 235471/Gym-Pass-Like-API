@@ -14,12 +14,12 @@ export async function gymRoutes(app: FastifyInstance) {
 
   // Register Gym Route (POST /)
   app.post(
-    '/',
+    "/",
     {
       schema: {
-        summary: 'Register a new gym',
-        description: 'Creates a new gym',
-        tags: ['gyms'],
+        summary: "Register a new gym",
+        description: "Creates a new gym",
+        tags: ["gyms"],
         body: z.object({
           title: z.string(),
           description: z.string().optional().nullable(),
@@ -28,14 +28,16 @@ export async function gymRoutes(app: FastifyInstance) {
           longitude: z.number(),
         }),
         response: {
-          201: z.object({}).optional().nullable(),
+          201: z.object({
+            id: z.string().uuid(),
+          }),
           400: z.object({
-            error: z.literal('ValidationError'),
+            error: z.literal("ValidationError"),
             message: z.array(
               z.object({
                 field: z.string(),
                 message: z.string(),
-              }),
+              })
             ),
           }),
           500: z.object({
@@ -46,8 +48,8 @@ export async function gymRoutes(app: FastifyInstance) {
         },
       },
     },
-    gymController.register,
-  )
+    gymController.register
+  );
 
   // Search Gyms Route (GET /search)
   app.get(
@@ -138,14 +140,16 @@ export async function gymRoutes(app: FastifyInstance) {
         description: 'Registers a user check-in at the specified gym',
         tags: ['check-ins'],
         params: z.object({
-          gymId: z.string(),
+          gymId: z.string().uuid(),
         }),
         body: z.object({
-          userLatitude: z.number(),
-          userLongitude: z.number(),
+          userLatitude: z.coerce.number(),
+          userLongitude: z.coerce.number(),
         }),
         response: {
-          201: z.object({}).optional().nullable(),
+          201: z.object({
+            id: z.string().uuid(),
+          }),
           400: z.object({
             error: z
               .literal('ValidationError')

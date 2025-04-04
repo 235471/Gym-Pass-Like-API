@@ -14,11 +14,21 @@ export class GymNearbyController {
   ) {}
 
   fetchNearby = async (
-    request: FastifyRequest<{ Querystring: SearchNearbyGymDTO }>,
+    request: FastifyRequest<{
+      Querystring: { latitude: number; longitude: number }
+    }>,
     reply: FastifyReply,
   ) => {
     try {
-      const result = await this.gymUseCase.execute(request.query)
+      const { latitude, longitude } = request.query
+
+      // Converter para o formato esperado pelo DTO
+      const searchParams: SearchNearbyGymDTO = {
+        userLatitude: latitude,
+        userLongitude: longitude,
+      }
+
+      const result = await this.gymUseCase.execute(searchParams)
 
       if (result.isLeft()) {
         return handleError(result.value, reply)

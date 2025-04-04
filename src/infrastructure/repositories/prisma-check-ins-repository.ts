@@ -88,13 +88,9 @@ export class PrismaCheckInRepository implements ICheckInRepository {
         },
       })
 
-      if (!checkIn) {
-        return left(new NotFoundError('Check in not found'))
-      }
-
       return right(checkIn)
     } catch (error) {
-      return left(new InternalServerError('Error finding check ins'))
+      return left(new InternalServerError('Error finding check-in by user ID and date'))
     }
   }
 
