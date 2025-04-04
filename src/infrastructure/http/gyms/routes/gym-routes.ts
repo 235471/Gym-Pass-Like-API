@@ -59,7 +59,7 @@ export async function gymRoutes(app: FastifyInstance) {
         tags: ['gyms'],
         querystring: z.object({
           query: z.string(),
-          page: z.number().optional(),
+          page: z.coerce.number().default(1),
         }),
         response: {
           200: z.array(

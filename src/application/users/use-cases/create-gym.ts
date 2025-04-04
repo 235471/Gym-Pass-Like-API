@@ -6,6 +6,7 @@ import { registerGymSchema } from '../schemas/gym-schemas'
 import { validateData } from '@/shared/utils/validation'
 import { IGymRepository } from '@/domains/gyms/repository/IGymRepository'
 import { Gym } from '@prisma/client'
+import { Decimal } from '@prisma/client/runtime/library'
 
 // Types
 type CreateGymUseCaseResponse = Either<IError, Gym>
@@ -26,7 +27,14 @@ export class CreateGymUseCase {
     // Use the validated data
     const validatedData = validationResult.value
 
-    const gymResult = await this.gymsRepository.create(validatedData)
+    // Converter latitude/longitude para Decimal antes de passar para o repositório
+    const dataForRepo = {
+      ...validatedData,
+      latitude: new Decimal(validatedData.latitude),
+      longitude: new Decimal(validatedData.longitude),
+    }
+
+    const gymResult = await this.gymsRepository.create(dataForRepo)
 
     if (gymResult.isLeft()) {
       return left(gymResult.value)
