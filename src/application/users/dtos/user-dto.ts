@@ -12,8 +12,6 @@ export interface UserProfileDTO {
   id: string
   name: string
   email: string
-  createdAt: Date
-  updatedAt?: Date | null
 }
 
 export interface CreateUserDTO {

@@ -1,29 +1,33 @@
 import { FastifyRequest, FastifyReply } from 'fastify'
 import { injectable, inject } from 'tsyringe'
 import { handleError } from '@/shared/errors/error-handler'
-import { RegisterUserUseCase } from '@/application/users/use-cases/register-user'
 import { InternalServerError } from '@/shared/errors/internal-server-error'
-import { RegisterUserDTO } from '@/application/users/dtos/user-dto'
+import { ValidateCheckInParamsDTO } from '@/application/users/dtos/check-in-dto'
+import { ValidateCheckInUseCase } from '@/application/users/use-cases/validate-check-in'
 
 @injectable()
-export class UserRegisterController {
+export class CheckInValidateController {
   constructor(
-    @inject(RegisterUserUseCase.name)
-    private registerUserUseCase: RegisterUserUseCase,
+    @inject(ValidateCheckInUseCase.name)
+    private checkInUseCase: ValidateCheckInUseCase,
   ) {}
 
-  register = async (
-    request: FastifyRequest<{ Body: RegisterUserDTO }>,
+  validate = async (
+    request: FastifyRequest<{
+      Params: ValidateCheckInParamsDTO
+    }>,
     reply: FastifyReply,
   ) => {
     try {
-      const result = await this.registerUserUseCase.execute(request.body)
+      const { checkInId } = request.params
+
+      const result = await this.checkInUseCase.execute({ id: checkInId })
 
       if (result.isLeft()) {
         return handleError(result.value, reply)
       }
 
-      return reply.status(201).send()
+      return reply.status(204).send()
     } catch (error) {
       return handleError(
         new InternalServerError(

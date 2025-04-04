@@ -26,3 +26,9 @@ export interface SearchNearbyGymDTO {
   userLatitude: number
   userLongitude: number
 }
+
+export interface ListGymsDTO {
+  title: string
+  description: string | undefined
+  phone: string | undefined
+}

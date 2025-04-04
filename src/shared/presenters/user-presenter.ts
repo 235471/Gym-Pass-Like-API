@@ -1,13 +1,13 @@
-import { UserDTO } from '@/application/users/dtos/user-dto'
+import { UserProfileDTO } from '@/application/users/dtos/user-dto'
+import { User } from '@prisma/client'
 
 export class UserPresenter {
-  static toHTTP(user: UserDTO) {
+  static profileToHTTP(user: User): UserProfileDTO {
+    // Exclude passwordHash
     return {
-      data: {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-      },
+      id: user.id,
+      name: user.name,
+      email: user.email,
     }
   }
 }

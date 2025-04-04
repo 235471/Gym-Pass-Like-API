@@ -14,6 +14,8 @@ import { swaggerConfig, swaggerUiConfig } from './infrastructure/config/swagger'
 import { userRoutes } from './infrastructure/http/users/routes/user-routes'
 import { setupAuthMiddleware } from './infrastructure/http/middlewares/auth-middleware'
 import './infrastructure/container/container'
+import { gymRoutes } from './infrastructure/http/gyms/routes/gym-routes'
+import { checkInsRoutes } from './infrastructure/http/check-ins/routes/check-ins-route' // Import check-in routes
 
 // Create fastify instance with Zod type provider
 const app = fastify().withTypeProvider<ZodTypeProvider>()
@@ -52,6 +54,14 @@ app.get('/', () => {
 // Register routes
 app.register(userRoutes, {
   prefix: 'users',
+})
+
+app.register(gymRoutes, {
+  prefix: 'gyms',
+})
+
+app.register(checkInsRoutes, {
+  prefix: 'check-ins',
 })
 
 export { app }

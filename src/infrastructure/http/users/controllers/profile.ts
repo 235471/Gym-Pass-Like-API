@@ -4,6 +4,7 @@ import { GetUserProfileUseCase } from '@/application/users/use-cases/get-user-pr
 
 import { handleError } from '@/shared/errors/error-handler'
 import { InternalServerError } from '@/shared/errors/internal-server-error'
+import { UserPresenter } from '@/shared/presenters/user-presenter'
 
 @injectable()
 export class ProfileController {
@@ -28,15 +29,14 @@ export class ProfileController {
       }
 
       // Send the user profile data on success
-      const userProfile = result.value
       return reply.status(200).send({
-        user: userProfile,
+        user: UserPresenter.profileToHTTP(result.value),
       })
     } catch (error) {
       // Handle unexpected errors
       return handleError(
         new InternalServerError(
-          error instanceof Error ? error.message : 'Erro interno do servidor',
+          error instanceof Error ? error.message : 'Internal server error',
         ),
         reply,
       )

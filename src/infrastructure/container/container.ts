@@ -9,6 +9,7 @@ import { FetchNearbyGymsUseCase } from '@/application/users/use-cases/fetch-near
 import { GetUserMetricsUseCase } from '@/application/users/use-cases/get-user-metrics'
 import { FetchUserCheckInsHistoryUseCase } from '@/application/users/use-cases/fetch-user-check-ins-history'
 import { ValidateCheckInUseCase } from '@/application/users/use-cases/validate-check-in'
+import { AuthenticateService } from '@/application/users/services/authenticate-service'
 import { IUserRepository } from '@/domains/users/repository/IUserRepository'
 import { IGymRepository } from '@/domains/gyms/repository/IGymRepository'
 import { ICheckInRepository } from '@/domains/checkin/repository/ICheckInRepository'
@@ -20,8 +21,13 @@ import { PrismaCheckInRepository } from '../repositories/prisma-check-ins-reposi
 import { AuthenticateController } from '../http/users/controllers/authenticate-controller'
 import { UserRegisterController } from '../http/users/controllers/user-register-controller'
 import { ProfileController } from '../http/users/controllers/profile'
-import { AuthenticateService } from '@/application/users/services/authenticate-service'
-
+import { GymRegisterController } from '../http/gyms/controllers/gym-register'
+import { GymSearchController } from '../http/gyms/controllers/gym-search'
+import { GymNearbyController } from '../http/gyms/controllers/gym-nearby'
+import { CheckInCreateController } from '../http/check-ins/controllers/check-in-create'
+import { CheckInHistoryController } from '../http/check-ins/controllers/check-in-history'
+import { CheckInMetricsController } from '../http/check-ins/controllers/check-in-metrics'
+import { CheckInValidateController } from '../http/check-ins/controllers/check-in-validate'
 // Registering Repositories
 container.registerSingleton<IUserRepository>(
   'UserRepository',
@@ -61,3 +67,22 @@ container.registerSingleton(AuthenticateService.name, AuthenticateService)
 container.registerSingleton(UserRegisterController.name, UserRegisterController)
 container.registerSingleton(AuthenticateController.name, AuthenticateController)
 container.registerSingleton(ProfileController.name, ProfileController)
+container.registerSingleton(GymRegisterController.name, GymRegisterController)
+container.registerSingleton(GymSearchController.name, GymSearchController)
+container.registerSingleton(GymNearbyController.name, GymNearbyController)
+container.registerSingleton(
+  CheckInCreateController.name,
+  CheckInCreateController,
+)
+container.registerSingleton(
+  CheckInHistoryController.name,
+  CheckInHistoryController,
+)
+container.registerSingleton(
+  CheckInMetricsController.name,
+  CheckInMetricsController,
+)
+container.registerSingleton(
+  CheckInValidateController.name,
+  CheckInValidateController,
+)

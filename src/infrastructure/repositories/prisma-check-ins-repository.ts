@@ -3,7 +3,7 @@ import { injectable, inject } from 'tsyringe'
 import { Either, left, right } from '@/shared/utils/either'
 import { IError } from '@/shared/errors/interfaces/error'
 import { InternalServerError } from '@/shared/errors/internal-server-error'
-import { CreateCheckInDTO } from '@/application/users/dtos/check-in-dto'
+import { CreateCheckInUseCaseDTO } from '@/application/users/dtos/check-in-dto'
 import { ICheckInRepository } from '@/domains/checkin/repository/ICheckInRepository'
 import { UserMetricsDTO } from '@/application/users/dtos/user-dto'
 import dayjs from 'dayjs'
@@ -13,7 +13,9 @@ import { NotFoundError } from '@/shared/errors/not-found-error'
 export class PrismaCheckInRepository implements ICheckInRepository {
   constructor(@inject(PrismaClient) private prisma: PrismaClient) {}
 
-  async create(data: CreateCheckInDTO): Promise<Either<IError, CheckIn>> {
+  async create(
+    data: CreateCheckInUseCaseDTO,
+  ): Promise<Either<IError, CheckIn>> {
     try {
       const checkIn = await this.prisma.checkIn.create({
         data,

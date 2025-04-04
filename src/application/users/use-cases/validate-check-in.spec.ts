@@ -2,6 +2,7 @@ import { InMemoryCheckInRepository } from '@/domains/checkin/repository/in-memor
 import { ValidateCheckInUseCase } from './validate-check-in'
 import { NotFoundError } from '@/shared/errors/not-found-error'
 import { UnprocessableEntityError } from '@/shared/errors/unprocessable-entity'
+import { randomUUID } from 'node:crypto'
 
 describe('ValidateCheck-in Use Case test suite', () => {
   let inMemoryCheckInRepository: InMemoryCheckInRepository
@@ -41,17 +42,18 @@ describe('ValidateCheck-in Use Case test suite', () => {
   })
 
   it('should not be able to validate check in to validate inexistent check in', async () => {
-    const checkIn = await inMemoryCheckInRepository.create({
-      gymId: 'gym-01',
-      userId: 'user-01',
+    await inMemoryCheckInRepository.create({
+      gymId: randomUUID(),
+      userId: randomUUID(),
     })
 
-    if (checkIn.isRight()) {
-      const result = await sut.execute({
-        id: 'inexistent-check-in-id',
-      })
+    // Call execute with a valid UUID that doesn't exist
+    const result = await sut.execute({
+      id: randomUUID(), // Generate a valid but non-existent UUID
+    })
 
-      expect(result.isLeft()).toBeTruthy()
+    expect(result.isLeft()).toBeTruthy()
+    if (result.isLeft()) {
       expect(result.value).toBeInstanceOf(NotFoundError)
     }
   })

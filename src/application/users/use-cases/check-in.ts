@@ -4,9 +4,11 @@ import { Either, left, right } from '@/shared/utils/either'
 import { NotFoundError } from '@/shared/errors/not-found-error'
 import { ICheckInRepository } from '@/domains/checkin/repository/ICheckInRepository'
 import { IGymRepository } from '@/domains/gyms/repository/IGymRepository'
-import { CheckInDTO, CreateCheckInDTO } from '../dtos/check-in-dto'
+import { CheckInDTO, CreateCheckInUseCaseDTO } from '../dtos/check-in-dto'
 import { getDistanceBetweenCoordinates } from '@/shared/utils/get-distance-between-coordinates'
 import { BadRequestError } from '@/shared/errors/bad-request-error'
+import { createCheckInUseCaseSchema } from '../schemas/check-in-schemas'
+import { validateData } from '@/shared/utils/validation'
 
 type CheckInUseCaseResponse = Either<IError, CheckInDTO>
 
@@ -17,17 +19,30 @@ export class CheckInUseCase {
     @inject('GymRepository') private gymRepository: IGymRepository,
   ) {}
 
-  async execute(data: CreateCheckInDTO): Promise<CheckInUseCaseResponse> {
+  async execute(
+    data: CreateCheckInUseCaseDTO,
+  ): Promise<CheckInUseCaseResponse> {
+    const validationResult = validateData(createCheckInUseCaseSchema, data)
+    if (validationResult.isLeft()) {
+      return left(validationResult.value)
+    }
+
+    const { userId, gymId, userLatitude, userLongitude } =
+      validationResult.value
+
     const MAX_DISTANCE_IN_METERS = 100
 
-    const gym = await this.gymRepository.findById(data.gymId)
+    const gym = await this.gymRepository.findById(gymId)
 
     if (gym.isLeft()) {
       return left(gym.value)
     }
 
     const distance = getDistanceBetweenCoordinates(
-      { latitude: data.userLatitude, longitude: data.userLongitude },
+      {
+        latitude: userLatitude,
+        longitude: userLongitude,
+      },
       {
         latitude: gym.value!.latitude.toNumber(),
         longitude: gym.value!.longitude.toNumber(),
@@ -43,13 +58,19 @@ export class CheckInUseCase {
     }
 
     const checkInOnSameDay = await this.checkInRepository.findByUserIdOnDate(
-      data.userId,
+      userId,
       new Date(),
     )
     if (checkInOnSameDay.isLeft()) {
       return left(checkInOnSameDay.value)
     }
-    const checkIn = await this.checkInRepository.create(data)
+
+    const checkIn = await this.checkInRepository.create({
+      userId,
+      gymId,
+      userLatitude,
+      userLongitude,
+    })
 
     if (checkIn.isLeft()) {
       return left(checkIn.value)

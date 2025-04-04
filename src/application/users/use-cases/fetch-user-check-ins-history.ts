@@ -2,12 +2,11 @@ import { injectable, inject } from 'tsyringe'
 import { IError } from '@/shared/errors/interfaces/error'
 import { Either, right, left } from '@/shared/utils/either'
 import { ICheckInRepository } from '@/domains/checkin/repository/ICheckInRepository'
-import { FetchCheckInHistoryDTO } from '../dtos/check-in-dto'
+import { FetchCheckInDTO, FetchCheckInHistoryDTO } from '../dtos/check-in-dto'
+import { validateData } from '@/shared/utils/validation'
+// Correct the schema import name
+import { getUserCheckInHistorySchema } from '../schemas/check-in-schemas'
 
-type FetchUserCheckInsHistoryUseCaseRequest = {
-  userId: string
-  page: number
-}
 type FetchUserCheckInsHistoryUseCaseResponse = Either<
   IError,
   FetchCheckInHistoryDTO
@@ -20,11 +19,19 @@ export class FetchUserCheckInsHistoryUseCase {
   ) {}
 
   async execute(
-    data: FetchUserCheckInsHistoryUseCaseRequest,
+    data: FetchCheckInDTO,
   ): Promise<FetchUserCheckInsHistoryUseCaseResponse> {
+    // Use the correct schema name for validation
+    const validationResult = validateData(getUserCheckInHistorySchema, data)
+    if (validationResult.isLeft()) {
+      return left(validationResult.value)
+    }
+
+    const { userId, page } = validationResult.value
+
     const checkInList = await this.checkInRepository.findManyByUserId(
-      data.userId,
-      data.page,
+      userId,
+      page,
     )
 
     if (checkInList.isRight()) {

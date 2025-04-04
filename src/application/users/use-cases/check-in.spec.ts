@@ -1,16 +1,16 @@
 import { InMemoryCheckInRepository } from '@/domains/checkin/repository/in-memory/in-memory-check-in-repository'
 import { CheckInUseCase } from './check-in'
 import { randomUUID } from 'node:crypto'
-import { CreateCheckInDTO } from '../dtos/check-in-dto'
+import { CreateCheckInUseCaseDTO } from '../dtos/check-in-dto'
 import { TooManyRequestsError } from '@/shared/errors/too-many-requests'
 import { InMemoryGymRepository } from '@/domains/gyms/repository/in-memory/in-memory-gym-repository'
 import { MakeGym } from '@/shared/test/factories/make-gym'
 import { GymDTO } from '../dtos/gym-dto'
 import { Decimal } from '@prisma/client/runtime/library'
 import { BadRequestError } from '@/shared/errors/bad-request-error'
-import { NotFoundError } from '@/shared/errors/not-found-error' // Added for new test
+import { NotFoundError } from '@/shared/errors/not-found-error'
 
-let payload: CreateCheckInDTO
+let payload: CreateCheckInUseCaseDTO
 describe('Check-in Use Case test suite', () => {
   let inMemoryCheckInRepository: InMemoryCheckInRepository
   let inMemoryGymRepository: InMemoryGymRepository
@@ -18,7 +18,6 @@ describe('Check-in Use Case test suite', () => {
   let gym: GymDTO
 
   beforeEach(async () => {
-    // Changed to async for potential future async setup
     inMemoryCheckInRepository = new InMemoryCheckInRepository()
     inMemoryGymRepository = new InMemoryGymRepository()
     sut = new CheckInUseCase(inMemoryCheckInRepository, inMemoryGymRepository)
@@ -27,15 +26,13 @@ describe('Check-in Use Case test suite', () => {
 
     // Create gym first
     gym = MakeGym({
-      // Use specific ID for predictability
-      id: 'gym-01',
       latitude: new Decimal(51.5075),
       longitude: new Decimal(-0.1279),
     })
-    await inMemoryGymRepository.create(gym) // Use await if create becomes async
+    await inMemoryGymRepository.create(gym)
 
     payload = {
-      gymId: gym.id, // Use the created gym's ID
+      gymId: gym.id,
       userId: randomUUID(),
       userLatitude: 51.5074,
       userLongitude: -0.1278,
@@ -44,7 +41,6 @@ describe('Check-in Use Case test suite', () => {
 
   afterEach(() => {
     vi.useRealTimers()
-    // No need to clear items manually if using a fresh instance each time
   })
 
   it('should be able to check in', async () => {
@@ -54,9 +50,9 @@ describe('Check-in Use Case test suite', () => {
     if (result.isRight()) {
       const checkIn = result.value
       expect(checkIn.id).toEqual(expect.any(String))
-      expect(checkIn.gymId).toBe(payload.gymId) // Corrected to camelCase
-      expect(checkIn.userId).toBe(payload.userId) // Corrected to camelCase
-      expect(checkIn.createdAt).toBeInstanceOf(Date) // Corrected to camelCase
+      expect(checkIn.gymId).toBe(payload.gymId)
+      expect(checkIn.userId).toBe(payload.userId)
+      expect(checkIn.createdAt).toBeInstanceOf(Date)
     }
   })
 
@@ -116,14 +112,14 @@ describe('Check-in Use Case test suite', () => {
   it('should not be able to check in if the gym does not exist', async () => {
     const result = await sut.execute({
       ...payload,
-      gymId: 'non-existent-gym-id', // Use an ID that is not in the repository
+      gymId: randomUUID(), // Use a valid UUID that doesn't exist in the repo
     })
 
     expect(result.isLeft()).toBeTruthy()
     if (result.isLeft()) {
       const error = result.value
-      expect(error).toBeInstanceOf(NotFoundError) // Expecting a NotFoundError
-      expect(error.message).toBe('Resource not found') // Or a more specific gym not found message
+      expect(error).toBeInstanceOf(NotFoundError)
+      expect(error.message).toBe('Resource not found')
     }
   })
 })

@@ -1,8 +1,8 @@
 import { FastifyInstance } from 'fastify'
-import { makeUserController } from '@/infrastructure/factories/makeUserController'
-import { makeAuthController } from '@/infrastructure/factories/makeAuthController'
+import { makeUserController } from '@/infrastructure/factories/users/makeUserController'
+import { makeAuthController } from '@/infrastructure/factories/users/makeAuthController'
 import { z } from 'zod'
-import { makeProfileController } from '@/infrastructure/factories/makeProfileController'
+import { makeProfileController } from '@/infrastructure/factories/users/makeProfileController'
 
 export async function userRoutes(app: FastifyInstance) {
   const userController = makeUserController()
@@ -84,8 +84,6 @@ export async function userRoutes(app: FastifyInstance) {
             id: z.string().uuid(),
             name: z.string(),
             email: z.string().email(),
-            createdAt: z.date(),
-            updatedAt: z.date().nullable().optional(),
           }),
         }),
         401: z.object({

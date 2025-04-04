@@ -1,23 +1,23 @@
 import { FastifyRequest, FastifyReply } from 'fastify'
 import { injectable, inject } from 'tsyringe'
 import { handleError } from '@/shared/errors/error-handler'
-import { RegisterUserUseCase } from '@/application/users/use-cases/register-user'
 import { InternalServerError } from '@/shared/errors/internal-server-error'
-import { RegisterUserDTO } from '@/application/users/dtos/user-dto'
+import { RegisterGymDTO } from '@/application/users/dtos/gym-dto'
+import { CreateGymUseCase } from '@/application/users/use-cases/create-gym'
 
 @injectable()
-export class UserRegisterController {
+export class GymRegisterController {
   constructor(
-    @inject(RegisterUserUseCase.name)
-    private registerUserUseCase: RegisterUserUseCase,
+    @inject(CreateGymUseCase.name)
+    private gymUseCase: CreateGymUseCase,
   ) {}
 
   register = async (
-    request: FastifyRequest<{ Body: RegisterUserDTO }>,
+    request: FastifyRequest<{ Body: RegisterGymDTO }>,
     reply: FastifyReply,
   ) => {
     try {
-      const result = await this.registerUserUseCase.execute(request.body)
+      const result = await this.gymUseCase.execute(request.body)
 
       if (result.isLeft()) {
         return handleError(result.value, reply)

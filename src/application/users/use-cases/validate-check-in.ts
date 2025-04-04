@@ -5,6 +5,8 @@ import { ICheckInRepository } from '@/domains/checkin/repository/ICheckInReposit
 import { ValidateCheckInDTO, CheckInDTO } from '../dtos/check-in-dto'
 import { CheckIn } from '@prisma/client'
 import dayjs from 'dayjs'
+import { validateData } from '@/shared/utils/validation'
+import { validateCheckInParamsSchema } from '../schemas/check-in-schemas'
 import { UnprocessableEntityError } from '@/shared/errors/unprocessable-entity'
 
 type ValidateCheckInUseCaseResponse = Either<IError, CheckInDTO>
@@ -19,7 +21,16 @@ export class ValidateCheckInUseCase {
   async execute(
     data: ValidateCheckInDTO,
   ): Promise<ValidateCheckInUseCaseResponse> {
-    const checkIn = await this.checkInRepository.findById(data.id)
+    const validationResult = validateData(validateCheckInParamsSchema, {
+      checkInId: data.id,
+    })
+    if (validationResult.isLeft()) {
+      return left(validationResult.value)
+    }
+
+    const { checkInId } = validationResult.value
+
+    const checkIn = await this.checkInRepository.findById(checkInId)
 
     if (checkIn.isLeft()) {
       return left(checkIn.value)

@@ -37,7 +37,7 @@ export class AuthenticateController {
     } catch (error) {
       return handleError(
         new InternalServerError(
-          error instanceof Error ? error.message : 'Erro interno do servidor',
+          error instanceof Error ? error.message : 'Internal server error',
         ),
         reply,
       )

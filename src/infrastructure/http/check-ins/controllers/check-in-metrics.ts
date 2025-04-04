@@ -1,29 +1,26 @@
 import { FastifyRequest, FastifyReply } from 'fastify'
 import { injectable, inject } from 'tsyringe'
 import { handleError } from '@/shared/errors/error-handler'
-import { RegisterUserUseCase } from '@/application/users/use-cases/register-user'
 import { InternalServerError } from '@/shared/errors/internal-server-error'
-import { RegisterUserDTO } from '@/application/users/dtos/user-dto'
+import { GetUserMetricsUseCase } from '@/application/users/use-cases/get-user-metrics'
 
 @injectable()
-export class UserRegisterController {
+export class CheckInMetricsController {
   constructor(
-    @inject(RegisterUserUseCase.name)
-    private registerUserUseCase: RegisterUserUseCase,
+    @inject(GetUserMetricsUseCase.name)
+    private checkInUseCase: GetUserMetricsUseCase,
   ) {}
 
-  register = async (
-    request: FastifyRequest<{ Body: RegisterUserDTO }>,
-    reply: FastifyReply,
-  ) => {
+  metric = async (request: FastifyRequest, reply: FastifyReply) => {
     try {
-      const result = await this.registerUserUseCase.execute(request.body)
+      const userId = request.user.sub
+      const result = await this.checkInUseCase.execute({ userId })
 
       if (result.isLeft()) {
         return handleError(result.value, reply)
       }
 
-      return reply.status(201).send()
+      return reply.status(200).send(result.value.checkInsCount)
     } catch (error) {
       return handleError(
         new InternalServerError(
