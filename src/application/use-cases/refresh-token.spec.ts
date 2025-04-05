@@ -6,6 +6,18 @@ import { makeUser } from '@/shared/test/factories/make-user'
 import { hash } from 'bcryptjs'
 import { InvalidCredentialsError } from '@/shared/errors/invalid-credentials-error'
 import { NotFoundError } from '@/shared/errors/not-found-error'
+import { vi } from 'vitest'; // Import vi
+
+// Mock AuthenticateService
+vi.mock('@/application/services/authenticate-service', () => {
+  return {
+    AuthenticateService: vi.fn().mockImplementation(() => {
+      return {
+        generateToken: vi.fn((user) => `mock-access-token-for-${user.id}`),
+      };
+    }),
+  };
+});
 
 describe('Refresh Token Use Case Test Suite', () => {
   let inMemoryUsersRepository: InMemoryUsersRepository
@@ -29,7 +41,7 @@ describe('Refresh Token Use Case Test Suite', () => {
   beforeEach(async () => {
     inMemoryUsersRepository = new InMemoryUsersRepository()
     inMemoryRefreshTokenRepository = new InMemoryRefreshTokenRepository()
-    authenticateService = new AuthenticateService()
+    authenticateService = new AuthenticateService() // Instantiate mocked service
     sut = new RefreshTokenUseCase(
       inMemoryRefreshTokenRepository,
       inMemoryUsersRepository,
@@ -54,12 +66,12 @@ describe('Refresh Token Use Case Test Suite', () => {
 
     // Assert
     expect(result.isRight()).toBeTruthy()
+    expect(authenticateService.generateToken).toHaveBeenCalledTimes(1); // Check mock call
     expect(inMemoryRefreshTokenRepository.items).toHaveLength(1) // Old deleted, new created
 
     if (result.isRight()) {
       const { accessToken, newRefreshToken } = result.value
-      expect(accessToken).toEqual(expect.any(String))
-      expect(accessToken.split('.').length).toBe(3) // Basic JWT check
+      expect(accessToken).toBe(`mock-access-token-for-${testUser.id}`); // Check mock return value
       expect(newRefreshToken).toEqual(expect.any(String))
       expect(newRefreshToken).not.toBe(oldRefreshToken)
       const storedToken = inMemoryRefreshTokenRepository.items.find(
@@ -78,6 +90,7 @@ describe('Refresh Token Use Case Test Suite', () => {
 
     // Assert
     expect(result.isLeft()).toBeTruthy()
+    expect(authenticateService.generateToken).not.toHaveBeenCalled(); // Check mock call
     expect(inMemoryRefreshTokenRepository.items).toHaveLength(0)
     if (result.isLeft()) {
       expect(result.value).toBeInstanceOf(InvalidCredentialsError)
@@ -101,6 +114,7 @@ describe('Refresh Token Use Case Test Suite', () => {
 
     // Assert
     expect(result.isLeft()).toBeTruthy()
+    expect(authenticateService.generateToken).not.toHaveBeenCalled(); // Check mock call
     expect(inMemoryRefreshTokenRepository.items).toHaveLength(0) // Expired token and any others for user should be deleted
     if (result.isLeft()) {
       expect(result.value).toBeInstanceOf(InvalidCredentialsError)
@@ -125,6 +139,7 @@ describe('Refresh Token Use Case Test Suite', () => {
 
     // Assert
     expect(result.isLeft()).toBeTruthy()
+    expect(authenticateService.generateToken).not.toHaveBeenCalled(); // Check mock call
     expect(inMemoryRefreshTokenRepository.items).toHaveLength(0) // Orphan token should be deleted
     if (result.isLeft()) {
       expect(result.value).toBeInstanceOf(NotFoundError)
