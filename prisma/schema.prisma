@@ -7,11 +7,17 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  ADMIN
+  USER
+}
+
 model User {
   id           String    @id @default(uuid())
   name         String
   email        String    @unique
   passwordHash String    @map("password_hash")
+  role         Role      @default(USER)
   createdAt    DateTime  @default(now()) @map("created_at")
   updatedAt    DateTime? @updatedAt @map("updated_at") // Corrected typo from udpated_at
 
@@ -55,6 +61,6 @@ model RefreshToken {
   userId    String   @map("user_id")
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@map("refresh_tokens")
   @@index([userId])
+  @@map("refresh_tokens")
 }

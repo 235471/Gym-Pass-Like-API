@@ -13,7 +13,6 @@ export class ProfileController {
     private getUserProfileUseCase: GetUserProfileUseCase,
   ) {}
 
-  // Change to arrow function syntax
   handle = async (request: FastifyRequest, reply: FastifyReply) => {
     try {
       // The verifyJWT middleware ensures request.user exists and has the user ID in 'sub'

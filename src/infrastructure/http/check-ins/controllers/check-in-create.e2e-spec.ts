@@ -11,7 +11,7 @@ describe('Create Check-in (E2E)', () => {
 
   beforeAll(async () => {
     await app.ready()
-    // Usa a função utilitária para autenticar o usuário
+    // Use the createAndAuthenticateE2EUser function to create a user and get the access token
     const { accessToken } = await createAndAuthenticateE2EUser(app)
     token = accessToken
   })
@@ -21,7 +21,6 @@ describe('Create Check-in (E2E)', () => {
   })
 
   it('should be able to create a check-in', async () => {
-    // Create gym directly using prismaTestClient
     const createGym = MakeGym({
       latitude: new Decimal(-27.2092052),
       longitude: new Decimal(-49.6401091),

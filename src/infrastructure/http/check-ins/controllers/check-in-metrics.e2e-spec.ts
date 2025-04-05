@@ -22,7 +22,6 @@ describe('Check-in Metrics (E2E)', () => {
   })
 
   it("should be able to get the total count of user's check-ins", async () => {
-    // Use token and userId from beforeAll
     const gym = await prismaTestClient.gym.create({
       data: MakeGym(),
     })
@@ -30,8 +29,8 @@ describe('Check-in Metrics (E2E)', () => {
     // Create some check-ins for the user
     await prismaTestClient.checkIn.createMany({
       data: [
-        { gymId: gym.id, userId }, // Use userId from beforeAll
-        { gymId: gym.id, userId }, // Use userId from beforeAll
+        { gymId: gym.id, userId },
+        { gymId: gym.id, userId },
       ],
     })
 

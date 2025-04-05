@@ -10,10 +10,10 @@ import {
   RefreshTokenUseCaseOutputDTO,
   CreateRefreshTokenDTO,
 } from '@/application/dtos/refresh-token-dto'
-import { InvalidCredentialsError } from '@/shared/errors/invalid-credentials-error' // Assuming this error is appropriate
+import { InvalidCredentialsError } from '@/shared/errors/invalid-credentials-error'
 import { NotFoundError } from '@/shared/errors/not-found-error'
 import { UserMapper } from '@/shared/utils/user-mapper'
-import { refreshTokenRequestBodySchema } from '@/application/schemas/refresh-token-schemas' // Import schema
+import { refreshTokenRequestBodySchema } from '@/application/schemas/refresh-token-schemas'
 import { validateData } from '@/shared/utils/validation'
 
 type RefreshTokenUseCaseResponse = Either<IError, RefreshTokenUseCaseOutputDTO>

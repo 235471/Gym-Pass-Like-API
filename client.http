@@ -12,6 +12,18 @@ Content-Type: application/json
 }
 
 ###
+# @name create_admin
+POST {{baseUrl}}/users
+Content-Type: application/json
+
+{
+    "name": "Test Admin",
+    "email": "testadmin@example.com",
+    "password": "#Test123",
+    "role": "ADMIN"
+}
+
+###
 # @name authentication
 POST {{baseUrl}}/users/auth
 Content-Type: application/json

@@ -19,6 +19,7 @@ export const registerUserSchema = z.object({
   name: z.string().nonempty('Name is required.'),
   email: emailSchema,
   password: strongPasswordSchema,
+  role: z.enum(['ADMIN', 'USER']).optional(),
 })
 
 // Schema for login authentication

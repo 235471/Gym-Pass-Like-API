@@ -9,11 +9,11 @@ import { container } from 'tsyringe'
 import { IUserRepository } from '@/domains/users/repository/IUserRepository'
 import { IGymRepository } from '@/domains/gyms/repository/IGymRepository'
 import { ICheckInRepository } from '@/domains/checkin/repository/ICheckInRepository'
-import { IRefreshTokenRepository } from '@/domains/users/repository/IRefreshTokenRepository' // Import interface
+import { IRefreshTokenRepository } from '@/domains/users/repository/IRefreshTokenRepository'
 import { PrismaUserRepository } from '@/infrastructure/repositories/prisma-users-repository'
 import { PrismaGymsRepository } from '@/infrastructure/repositories/prisma-gyms-repository'
 import { PrismaCheckInRepository } from '@/infrastructure/repositories/prisma-check-ins-repository'
-import { PrismaRefreshTokenRepository } from '@/infrastructure/repositories/prisma-refresh-token-repository' // Import implementation
+import { PrismaRefreshTokenRepository } from '@/infrastructure/repositories/prisma-refresh-token-repository'
 
 config({ path: '.env', override: true })
 

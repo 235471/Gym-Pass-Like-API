@@ -26,6 +26,7 @@ export async function userRoutes(app: FastifyInstance) {
         name: z.string(),
         email: z.string(),
         password: z.string(),
+        role: z.string().optional(),
       }),
       response: {
         201: z.object({}),
@@ -68,7 +69,6 @@ export async function userRoutes(app: FastifyInstance) {
       // No request body needed, token comes from cookie
       response: {
         200: z.object({
-          // Only accessToken in body
           accessToken: z.string(),
         }),
         401: generalErrorSchema,

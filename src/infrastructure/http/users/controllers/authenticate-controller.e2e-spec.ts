@@ -32,7 +32,6 @@ describe('Authenticate Controller (E2E)', () => {
     expect(authResponse.get('Set-Cookie')).toEqual(
       expect.arrayContaining([expect.stringContaining('refreshToken=')]), // Check for refreshToken cookie
     )
-    // Optional: More specific cookie checks (e.g., HttpOnly, Path=/) if needed
   })
 
   it('should not be able to authenticate a user with invalid credentials', async () => {

@@ -22,7 +22,6 @@ export class GymNearbyController {
     try {
       const { latitude, longitude } = request.query
 
-      // Converter para o formato esperado pelo DTO
       const searchParams: SearchNearbyGymDTO = {
         userLatitude: latitude,
         userLongitude: longitude,

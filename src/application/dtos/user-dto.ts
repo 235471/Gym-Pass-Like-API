@@ -12,12 +12,14 @@ export interface UserProfileDTO {
   id: string
   name: string
   email: string
+  role: string
 }
 
 export interface CreateUserDTO {
   name: string
   email: string
   passwordHash: string
+  role?: string
 }
 
 // DTO for user registration
@@ -25,6 +27,7 @@ export interface RegisterUserDTO {
   name: string
   email: string
   password: string
+  role?: string
 }
 // DTO for authentication
 export interface AuthenticateUserDTO {

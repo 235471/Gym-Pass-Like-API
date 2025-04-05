@@ -36,7 +36,6 @@ export class AuthenticateController {
         secure: process.env.NODE_ENV === 'production', // Send only over HTTPS in production
         httpOnly: true, // Not accessible via JavaScript
         sameSite: 'strict', // Mitigate CSRF
-        // maxAge: 60 * 60 * 24 * 30, // Optional: Set expiry (e.g., 30 days in seconds) - matches DB expiry
       })
 
       // Send only access token in the body

@@ -1,7 +1,7 @@
 import { FastifyInstance } from 'fastify'
 import request from 'supertest'
 import { faker } from '@faker-js/faker'
-import { prisma } from '@/infrastructure/database/prisma' // Import prisma
+import { prisma } from '@/infrastructure/database/prisma'
 
 // Utility function to create a user and get an authentication token + userId
 export async function createAndAuthenticateUser(
@@ -11,8 +11,8 @@ export async function createAndAuthenticateUser(
 ): Promise<{ token: string; userId: string }> {
   // Update return type
   const name = faker.person.fullName()
-  const email = faker.internet.email() // Use a unique email
-  const password = 'ValidP@ssw0rd' // Use a valid password
+  const email = faker.internet.email()
+  const password = 'ValidP@ssw0rd' // Use a valid password format
 
   // Register the user directly via HTTP request
   await request(app.server).post('/users').send({

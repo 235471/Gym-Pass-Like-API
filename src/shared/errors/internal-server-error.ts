@@ -5,7 +5,7 @@ export class InternalServerError extends Error implements IError {
 
   constructor(message = 'Internal server error') {
     super(message)
-    // Preserva o stack trace
+    // Preserves stack trace
     Error.captureStackTrace(this, this.constructor)
   }
 }

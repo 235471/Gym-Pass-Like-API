@@ -8,11 +8,17 @@ export class AuthenticateService {
   generateToken(user: UserProfileDTO): string {
     const privateKey = Buffer.from(env.JWT_PRIVATE_KEY, 'base64')
 
-    const accessToken = jwt.sign({}, privateKey, {
-      algorithm: 'RS256',
-      subject: user.id,
-      expiresIn: '30m',
-    })
+    const accessToken = jwt.sign(
+      {
+        role: user.role,
+      },
+      privateKey,
+      {
+        algorithm: 'RS256',
+        subject: user.id,
+        expiresIn: '30m',
+      },
+    )
 
     return accessToken
   }

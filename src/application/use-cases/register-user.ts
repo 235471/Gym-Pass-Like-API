@@ -27,7 +27,7 @@ export class RegisterUserUseCase {
       return left(validationResult.value)
     }
 
-    const { name, email, password } = validationResult.value
+    const { name, email, password, role } = validationResult.value
 
     const emailCheckResult = await this.userRepository.findByEmail(email)
 
@@ -46,6 +46,7 @@ export class RegisterUserUseCase {
       name,
       email,
       passwordHash,
+      role,
     })
 
     if (createResult.isLeft()) {

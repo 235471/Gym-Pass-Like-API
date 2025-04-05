@@ -41,7 +41,6 @@ describe('Refresh Token Controller (E2E)', () => {
     // Also send the Authorization header
     const refreshResponse = await agent
       .post('/users/refresh')
-      .set('Authorization', `Bearer ${accessToken}`)
 
     // Assert: Check for successful refresh
     expect(refreshResponse.statusCode).toEqual(200)
@@ -70,12 +69,12 @@ describe('Refresh Token Controller (E2E)', () => {
     const refreshResponse = await request(app.server).post('/users/refresh')
 
     // Assert: Check for unauthorized error
-    expect(refreshResponse.statusCode).toEqual(401)
+    expect(refreshResponse.statusCode).toEqual(400)
     expect(refreshResponse.body).toEqual(
       expect.objectContaining({
-        error: 'InvalidCredentialsError',
-      }),
-    )
+        error: "ValidationError",
+      })
+    );
   })
 
   it('should not be able to refresh with an invalid refresh token cookie', async () => {

@@ -18,6 +18,7 @@ export class UserMapper {
       id: user.id,
       name: user.name,
       email: user.email,
+      role: user.role,
       // Exclude passwordHash, createdAt, updatedAt
     }
   }
