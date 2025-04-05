@@ -9,13 +9,14 @@ import {
 import fastifySwagger from '@fastify/swagger'
 import fastifySwaggerUi from '@fastify/swagger-ui'
 import fastifyJwt from '@fastify/jwt'
+import fastifyCookie from '@fastify/cookie'
 import { env } from '@/env'
 import { swaggerConfig, swaggerUiConfig } from './infrastructure/config/swagger'
 import { userRoutes } from './infrastructure/http/users/routes/user-routes'
 import { setupAuthMiddleware } from './infrastructure/http/middlewares/auth-middleware'
 import './infrastructure/container/container'
 import { gymRoutes } from './infrastructure/http/gyms/routes/gym-routes'
-import { checkInsRoutes } from './infrastructure/http/check-ins/routes/check-ins-route' // Import check-in routes
+import { checkInsRoutes } from './infrastructure/http/check-ins/routes/check-ins-route'
 
 // Create fastify instance with Zod type provider
 const app = fastify().withTypeProvider<ZodTypeProvider>()
@@ -32,6 +33,13 @@ app.register(fastifySwagger, {
 
 // Configure Swagger UI
 app.register(fastifySwaggerUi, swaggerUiConfig)
+
+// Configure Cookies (register before JWT if JWT needs cookies)
+app.register(fastifyCookie, {
+  secret: env.COOKIE_SECRET,
+  hook: 'onRequest',
+  parseOptions: {},
+})
 
 // Configure JWT
 app.register(fastifyJwt, {

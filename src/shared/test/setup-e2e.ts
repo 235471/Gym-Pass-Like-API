@@ -67,7 +67,7 @@ beforeAll(async () => {
   })
   // Override RefreshTokenRepository as well
   container.register<IRefreshTokenRepository>('RefreshTokenRepository', {
-      useValue: new PrismaRefreshTokenRepository(testPrismaClient),
+    useValue: new PrismaRefreshTokenRepository(testPrismaClient),
   })
 })
 

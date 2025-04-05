@@ -1,5 +1,5 @@
-import { UserProfileDTO } from "@/application/dtos/user-dto";
-import { User } from "@prisma/client";
+import { UserProfileDTO } from '@/application/dtos/user-dto'
+import { User } from '@prisma/client'
 
 export class UserPresenter {
   static profileToHTTP(user: User): UserProfileDTO {
@@ -8,6 +8,6 @@ export class UserPresenter {
       id: user.id,
       name: user.name,
       email: user.email,
-    };
+    }
   }
 }

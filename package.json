@@ -36,7 +36,6 @@
     "passport-jwt": "4.0.1",
     "prisma": "6.5.0",
     "supertest": "7.1.0",
-    "tsup": "8.4.0",
     "tsx": "4.19.3",
     "typescript": "5.8.2",
     "unplugin-swc": "1.5.1",
@@ -45,6 +44,7 @@
   },
   "dependencies": {
     "@anatine/zod-openapi": "2.2.7",
+    "@fastify/cookie": "11.0.2",
     "@fastify/jwt": "9.1.0",
     "@fastify/swagger": "9.4.2",
     "@fastify/swagger-ui": "5.2.2",

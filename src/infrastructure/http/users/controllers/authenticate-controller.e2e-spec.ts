@@ -28,10 +28,11 @@ describe('Authenticate Controller (E2E)', () => {
 
     expect(authResponse.statusCode).toEqual(200)
     expect(authResponse.body).toHaveProperty('accessToken')
-    // Check if token format is a valid JWT
-    expect(authResponse.body.accessToken).toMatch(
-      /^eyJ[a-zA-Z0-9-_]+\.[a-zA-Z0-9-_]+\.[a-zA-Z0-9-_]+$/,
+    expect(authResponse.body).not.toHaveProperty('refreshToken') // Verify refresh token is NOT in body
+    expect(authResponse.get('Set-Cookie')).toEqual(
+      expect.arrayContaining([expect.stringContaining('refreshToken=')]), // Check for refreshToken cookie
     )
+    // Optional: More specific cookie checks (e.g., HttpOnly, Path=/) if needed
   })
 
   it('should not be able to authenticate a user with invalid credentials', async () => {

@@ -1,5 +1,5 @@
-import { ListCheckInDTO } from "@/application/dtos/check-in-dto";
-import { CheckIn } from "@prisma/client";
+import { ListCheckInDTO } from '@/application/dtos/check-in-dto'
+import { CheckIn } from '@prisma/client'
 
 export class CheckInPresenter {
   static checkInListToHTTP(checkIn: CheckIn): ListCheckInDTO {
@@ -7,6 +7,6 @@ export class CheckInPresenter {
       id: checkIn.id,
       userId: checkIn.userId,
       gymId: checkIn.gymId,
-    };
+    }
   }
 }

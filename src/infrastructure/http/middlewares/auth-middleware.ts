@@ -6,6 +6,7 @@ import { InvalidCredentialsError } from '@/shared/errors/invalid-credentials-err
 const publicRoutes = [
   { method: 'POST', url: '/users' },
   { method: 'POST', url: '/users/auth' },
+  { method: 'POST', url: '/users/refresh' },
   { method: 'GET', url: '/' },
   { method: 'GET', url: '/docs' },
   { method: 'GET', url: '/docs/*' },

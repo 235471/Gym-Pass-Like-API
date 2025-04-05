@@ -1,7 +1,7 @@
-import { Decimal } from "@prisma/client/runtime/library";
-import { GymDTO } from "@/application/dtos/gym-dto";
-import { faker } from "@faker-js/faker";
-import { randomUUID } from "node:crypto";
+import { Decimal } from '@prisma/client/runtime/library'
+import { GymDTO } from '@/application/dtos/gym-dto'
+import { faker } from '@faker-js/faker'
+import { randomUUID } from 'node:crypto'
 
 export function MakeGym(override: Partial<GymDTO> = {}): GymDTO {
   return {
@@ -12,16 +12,16 @@ export function MakeGym(override: Partial<GymDTO> = {}): GymDTO {
     latitude: new Decimal(faker.location.latitude()),
     longitude: new Decimal(faker.location.longitude()),
     ...override,
-  };
+  }
 }
 
 export function MakeGymRequest(overrides = {}) {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { latitude, longitude, id, ...rest } = MakeGym(overrides);
+  const { latitude, longitude, id, ...rest } = MakeGym(overrides)
 
   return {
     ...rest,
     latitude: latitude.toNumber(),
     longitude: longitude.toNumber(),
-  };
+  }
 }

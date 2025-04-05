@@ -15,7 +15,7 @@ describe('Authenticate Use Case test suite', () => {
     inMemoryRefreshTokenRepository = new InMemoryRefreshTokenRepository() // Instantiate refresh repo
     sut = new AuthenticateUseCase(
       inMemoryUsersRepository,
-      inMemoryRefreshTokenRepository // Pass refresh repo to constructor
+      inMemoryRefreshTokenRepository, // Pass refresh repo to constructor
     )
   })
 
@@ -48,7 +48,9 @@ describe('Authenticate Use Case test suite', () => {
       expect(user).not.toHaveProperty('passwordHash')
 
       expect(refreshToken).toEqual(expect.any(String))
-      expect(inMemoryRefreshTokenRepository.items[0].token).toEqual(refreshToken)
+      expect(inMemoryRefreshTokenRepository.items[0].token).toEqual(
+        refreshToken,
+      )
       expect(inMemoryRefreshTokenRepository.items[0].userId).toEqual(user.id)
     }
   })
