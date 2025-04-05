@@ -6,7 +6,8 @@ import { makeCheckInMetricsController } from '@/infrastructure/factories/check-i
 import {
   generalErrorSchema,
   validationErrorSchema,
-} from '@/application/schemas/common-schemas'
+} from '@/application/schemas/common-schemas';
+import { verifyUserRole } from '@/infrastructure/http/middlewares/verify-user-role';
 
 export async function checkInsRoutes(app: FastifyInstance) {
   const checkInHistoryController = makeCheckInHistoryController()
@@ -65,9 +66,10 @@ export async function checkInsRoutes(app: FastifyInstance) {
   app.patch(
     '/:checkInId/validate',
     {
+      onRequest: [verifyUserRole('ADMIN')], // Add role verification middleware
       schema: {
-        summary: 'Validate a check-in',
-        description: 'Validates an existing check-in if within the time window',
+        summary: 'Validate a check-in (Admin Only)',
+        description: 'Validates an existing check-in if within the time window (Requires ADMIN role)',
         tags: ['check-ins'],
         security: [{ bearerAuth: [] }],
         params: z.object({
@@ -82,6 +84,6 @@ export async function checkInsRoutes(app: FastifyInstance) {
         },
       },
     },
-    checkInValidateController.validate,
+    checkInValidateController.validate as any
   )
 }

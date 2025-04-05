@@ -7,7 +7,8 @@ import { makeGymSearchController } from '@/infrastructure/factories/gyms/makeGym
 import {
   generalErrorSchema,
   validationErrorSchema,
-} from '@/application/schemas/common-schemas'
+} from '@/application/schemas/common-schemas';
+import { verifyUserRole } from '@/infrastructure/http/middlewares/verify-user-role'; 
 
 export async function gymRoutes(app: FastifyInstance) {
   const gymController = makeGymController()
@@ -18,9 +19,10 @@ export async function gymRoutes(app: FastifyInstance) {
   app.post(
     '/',
     {
+      onRequest: [verifyUserRole('ADMIN')], // Add role verification middleware
       schema: {
-        summary: 'Register a new gym',
-        description: 'Creates a new gym',
+        summary: 'Register a new gym (Admin Only)',
+        description: 'Creates a new gym (Requires ADMIN role)',
         tags: ['gyms'],
         security: [{ bearerAuth: [] }],
         body: z.object({
@@ -39,7 +41,7 @@ export async function gymRoutes(app: FastifyInstance) {
         },
       },
     },
-    gymController.register,
+    gymController.register as any
   )
 
   app.get(

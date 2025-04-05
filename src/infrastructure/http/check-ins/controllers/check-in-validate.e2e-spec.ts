@@ -16,7 +16,7 @@ describe('Validate Check-in (E2E)', () => {
 
     // Authenticate the user
     const { accessToken, userId: authenticatedUserId } =
-      await createAndAuthenticateE2EUser(app)
+      await createAndAuthenticateE2EUser(app, true)
     token = accessToken
     userId = authenticatedUserId
   })

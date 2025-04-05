@@ -10,7 +10,7 @@ describe('Register Gym (E2E)', () => {
     await app.ready()
 
     // Authenticate the user
-    const { accessToken } = await createAndAuthenticateE2EUser(app)
+    const { accessToken } = await createAndAuthenticateE2EUser(app, true)
     token = accessToken
   })
 

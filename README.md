@@ -87,7 +87,7 @@ The API exposes the following main endpoints, grouped by resource:
 *   `GET /me` (Authenticated): Get the profile of the currently logged-in user.
 
 **Gyms (`/gyms`)**
-*   `POST /` (Authenticated): Register a new gym (potentially admin-only).
+*   `POST /` (Admin Only): Register a new gym.
 *   `GET /search` (Authenticated): Search for gyms by name (paginated).
 *   `GET /nearby` (Authenticated): Fetch gyms within a 10km radius based on user coordinates (paginated).
 *   `POST /{gymId}/check-ins` (Authenticated): Create a check-in for the specified gym.
@@ -95,7 +95,7 @@ The API exposes the following main endpoints, grouped by resource:
 **Check-ins (`/check-ins`)**
 *   `GET /history` (Authenticated): Fetch the logged-in user's check-in history (paginated).
 *   `GET /metrics` (Authenticated): Get the total check-in count for the logged-in user.
-*   `PATCH /{checkInId}/validate` (Authenticated): Validate a specific check-in (potentially admin-only).
+*   `PATCH /{checkInId}/validate` (Admin Only): Validate a specific check-in.
 
 ## API Documentation (Swagger)
 
