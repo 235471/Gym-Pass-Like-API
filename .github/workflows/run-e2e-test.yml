@@ -1,0 +1,39 @@
+name: Run E2E Tests
+
+on: [pull_request]
+
+jobs:
+    run-e2e-tests:
+      name: Run E2E Tests
+      runs-on: ubuntu-latest
+
+      services:
+        postgres:
+          image: bitnami/postgresql
+          options: >-
+            --env POSTGRES_USER=docker-solid
+            --env POSTGRES_PASSWORD=docker
+            --env POSTGRES_DB=api-solid-gym
+          ports:
+            - 5432:5432
+      steps:
+        - name: Checkout code
+          uses: actions/checkout@v4 # Use a recent version of checkout
+
+        - name: Set up Node.js
+          uses: actions/setup-node@v4 # Use a recent version of setup-node
+          with:
+            node-version: '20.x' # Use a recent LTS version
+            cache: 'npm' # Cache npm dependencies
+  
+        - name: Install dependencies
+          run: npm ci # Use clean install for reliability
+  
+        - name: Run E2E tests
+          run: npm run test:e2e
+          
+          env:
+            DATABASE_URL: "postgresql://docker-solid:docker@localhost:5432/api-solid-gym?schema=public"
+            JWT_PRIVATE_KEY: LS0tLS1CRUdJTiBQUklWQVRFIEtFWS0tLS0tCk1JSUV2QUlCQURBTkJna3Foa2lHOXcwQkFRRUZBQVNDQktZd2dnU2lBZ0VBQW9JQkFRREJCdTBhSHJGdGozczgKZEN1Z3htZ1ZjUzVNaXd5ZEhRcExxZDhQKzY2Vkc1ZmNHM3AzdWR1L1F3WjFGOUZld091Q3B0Y2k2aVBuNUlGWApEZU5jSmRzcUNoYlNUSmJsQU1LWVlobHYzRU1RdzdPcm9ndXp5SVV0ZVgzdjMxRlV3bVZBK3VmcUdPQjlRZ3QyCjN2ZjRFWXo3MUJEc1NUVWpOVTlkU2pLTGF3THlNQW5mZ3ZvdGkyWFpxRmxJRnJOMG9HV05PRUN5bStJbkJBb2MKM09mM01KU0xhbHBkTDAwdWtZMFpNWXN2dUVBc0syelJlSE5WUGJmVTJuQm1meGR1RjlFZmRIYmdEQkRZN2ZWVQpmckFoZHdpWGtjR1hLMTZXdjdtMnpuOTFXT0hqZDlJY3JvWEc4NENXMUhYQUNucTRFSzIwaDE5RDRuc3AweVFQCkhXdkUvKy9OQWdNQkFBRUNnZ0VBQUt4OGtDWmxrQ2N5aWNpZ1QrSTJ2dnhxSncyczBmbytRakh0QitFUHNObSsKRjZ5QUhuWHFldFRRSERJTVU0VjlFQUx0RTh2V01aVUduRVJUQUMyZzQxd2JYc000V0REZFFCTHJaYmM2V1VYMwpJVUZLQm9CWDYvOWhoU2dSY3JSalkyejJzRjdocXo4R0RxWkM0WndnVy9PNCtxTlBLVkZBeS9QbWltaTF5YnRqCkVtMjNzT3dPb3orZ0FxejN4MjhwWU1xT3dEUFBLNzd5SEVoaXJ1cE8vblBJY3YzYjlsTGNFeU1YdkxFdWZjUHEKbUo4MzhKUkZrTE5iVEVzQUluTGt3N0tJMTRONW9WWDEzSm4zbXFFc043TXl5UkdmZVNLQUgySlJwajFuVDNOdwp6ODRaTTVoUUV1UkFIVnBwWUdGTVVyRDFpY1lZQk5HV3lZTVI3RlFxc1FLQmdRRGZvZUtYT3EwdW4zSzZSbnZiCnNUNkRjN3B4d2tMN00xSkVMTm92MXk4aFUwYlBuWFVRS2lra1h0a1JmeFYvVkhrU3NSdy84cUxCNFR2QzdHUkgKQnRka29LSVpmenBYM2hTS0g5eHZWTytmdkM5VEMwZXBwUDZVRVhPa0pkMmwxQUI0L3ptS2FyMEhQVXc0ZitmQQpuaVpwYXBZT3JqK1ozVmpwTTUwb0ZmZW1yd0tCZ1FEYzl3cUN2VGlvK2hOSG1IMXpqbTBmd1JxUVlUblg0NjhPCmE5VDdhWUFQUUIyR0p0NlVhMmJLZHFRZ1o4WXl4OGxsQ016NGtVTk1lSE15Qm85YnJXYlIxRHFpUjcwTG9TUisKdUZlaHdhUXlZTldHakJKcnV1VjM4bGZJSS8zZW1EZS9OVVZqTUwxWWo3eTR5cUY3N3RsSHRoSGlUeEUxQWNkbwpNeWxLSEptd1F3S0JnQnVVQ1MrQkt1NCs5NVVGTUMwTmxKbjlZWmE1MEN6T1RXemU0eUZYTmhhMEFGMkdHM09jCjMybiswR0laKy9xeDNpUng5dnZqM2pKdXBrSUppT3hCYWJxZEhLQnNVak9Yell5akZUb2RqVmR6aTVxQUg1eEsKSHFMLzYvVG9Qb2MrdDdnME1WSmlpMkVqTEEwanFON1dJZ0tLQkd0WERielowU2NoR0Zaakx5RTlBb0dBSnNOcgo0NTJnVi94dTcydHY3cHE0eUE1UFE2N2F2K1hnYXU0OTBkRWpOd212WkQ1alk3UW50ekx5L2dCV2c4Z0txNS9NCm5YcVdUTThBbm5FS0t6SVRUSklucXhwY3JyS1pQV1hIY2NnUHJ3clB5cWU5LzRvdEFVclJYWG42NmxiWHlNSm0KcHMwQkdvMDB0VkpPMi9mOXhCZkxzV0RmaXVZQi9tU2pSSzRaeEJNQ2dZQm0ycjNOaEdWMDhJQ09ld0JDVlhWUgorK1dkZUMwekdHbWFmVnk3SVRVcjVrWlZoQ0Y1aHhvcjRoZ2RGTTBwN0NUUWZGT2x2ZGVqckcvUFVheFpvZXpwCkZsTmM1dStZQ2wvaWJwS0JFQkpOT0dKSThIcTRMUjNvVmdKVTU4OXc1WUpYcm1TZ1RycWl4cm9Wd3Zib2JkYzQKK09PV2hzRUpCR3JNb2tsZmtiakNwQT09Ci0tLS0tRU5EIFBSSVZBVEUgS0VZLS0tLS0K
+            JWT_PUBLIC_KEY: LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0KTUlJQklqQU5CZ2txaGtpRzl3MEJBUUVGQUFPQ0FROEFNSUlCQ2dLQ0FRRUF3UWJ0R2g2eGJZOTdQSFFyb01abwpGWEV1VElzTW5SMEtTNm5mRC91dWxSdVgzQnQ2ZDduYnYwTUdkUmZSWHNEcmdxYlhJdW9qNStTQlZ3M2pYQ1hiCktnb1cwa3lXNVFEQ21HSVpiOXhERU1PenE2SUxzOGlGTFhsOTc5OVJWTUpsUVBybjZoamdmVUlMZHQ3MytCR00KKzlRUTdFazFJelZQWFVveWkyc0M4akFKMzRMNkxZdGwyYWhaU0JhemRLQmxqVGhBc3B2aUp3UUtITnpuOXpDVQppMnBhWFM5TkxwR05HVEdMTDdoQUxDdHMwWGh6VlQyMzFOcHdabjhYYmhmUkgzUjI0QXdRMk8zMVZINndJWGNJCmw1SEJseXRlbHIrNXRzNS9kVmpoNDNmU0hLNkZ4dk9BbHRSMXdBcDZ1QkN0dElkZlErSjdLZE1rRHgxcnhQL3YKelFJREFRQUIKLS0tLS1FTkQgUFVCTElDIEtFWS0tLS0tCg==
+            COOKIE_SECRET: fbTu1XhS8f3kGaQ4lgNARpp+/AOHyg3fnZLNOy6ag5Q=
