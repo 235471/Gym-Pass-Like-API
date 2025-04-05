@@ -13,6 +13,8 @@
     "test:watch": "vitest",
     "test:e2e": "NODE_ENV=test vitest run -c vitest.config.e2e.ts",
     "test:coverage": "vitest run --coverage",
+    "test:cov:e2e": "NODE_ENV=test vitest run --coverage -c vitest.config.e2e.ts",
+    "test:cov:all": "npm run test:coverage && npm run test:cov:e2e",
     "test:ui": "vitest --ui"
   },
   "keywords": [],
