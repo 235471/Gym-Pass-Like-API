@@ -75,6 +75,22 @@ Testing is a crucial part of this project, ensuring both individual components a
     *   Helper utilities (like `src/shared/utils/test-auth.ts::createAndAuthenticateE2EUser`) are used to streamline common E2E setup tasks, such as user creation and authentication, reducing boilerplate code in test files.
     *   E2E test configuration is managed separately in `vitest.config.e2e.ts`.
 
+## Continuous Integration (CI) with GitHub Actions
+
+This project utilizes GitHub Actions to automate the execution of End-to-End (E2E) tests on every pull request, ensuring code changes don't break existing functionality.
+
+*   **Workflow File**: The CI configuration is defined in `.github/workflows/run-e2e-test.yml`.
+*   **Trigger**: The workflow runs automatically whenever a pull request is opened or updated against the main branch.
+*   **Process**: The workflow performs the following steps:
+    1.  Checks out the latest code.
+    2.  Sets up the specified Node.js environment.
+    3.  Installs project dependencies using `npm ci` for a clean install.
+    4.  Starts a dedicated PostgreSQL database service container exclusively for the test run.
+    5.  Executes the E2E test suite (`npm run test:e2e`) against the application and the temporary database.
+
+*   **Environment Variables in CI**: The workflow file defines necessary environment variables for the E2E tests, including `DATABASE_URL`, `JWT_PRIVATE_KEY`, `JWT_PUBLIC_KEY`, and `COOKIE_SECRET`.
+    *   **Important Clarification**: The secrets and keys defined directly within the workflow file are generated specifically for the isolated, ephemeral environment of the GitHub Actions runner. They are **test-specific values** and **do not represent real production or development secrets**. They only provide access to the temporary services (like the PostgreSQL container) created during that specific CI job run. This approach is used for simplicity in this demonstration project. In production scenarios, sensitive secrets should always be managed securely using tools like GitHub Secrets or other dedicated secret management solutions.
+
 ## API Endpoints Overview
 
 The API exposes the following main endpoints, grouped by resource:
