@@ -1,168 +1,172 @@
-# App
+# API SOLID: A Showcase of Clean Architecture and Best Practices
 
-GymPass style app.
+This project is a backend API, inspired by the GymPass application model, designed to demonstrate the application of SOLID principles, Clean Architecture, Domain-Driven Design (DDD), and various software engineering best practices. It serves as a practical example of building scalable, maintainable, and testable Node.js applications using TypeScript.
 
-## RFs (Requisitos funcionais)
+## Key Features (Functional Requirements)
 
-- [x] Deve ser possível se cadastrar;
-- [x] Deve ser possível se autenticar;
-- [x] Deve ser possível obter o perfil de um usuário logado;
-- [x] Deve ser possível obter o número de check-ins realizados pelo usuário logado;
-- [x] Deve ser possível o usuário obter o seu histórico de check-ins;
-- [x] Deve ser possível o usuário buscar academias próximas (até 10km);
-- [x] Deve ser possível o usuário buscar academias pelo nome;
-- [x] Deve ser possível o usuário realizar check-in em uma academia;
-- [x] Deve ser possível validar o check-in de um usuário;
-- [x] Deve ser possível cadastrar uma academia;
+*   User registration and authentication.
+*   User profile retrieval (logged-in user).
+*   Retrieval of user check-in count and history.
+*   Ability to search for nearby gyms (within a 10km radius).
+*   Ability to search for gyms by name.
+*   Functionality for users to check into a gym.
+*   Validation of user check-ins.
+*   Gym registration (potentially restricted to administrators).
 
-## RNs (Regras de negócio)
+## Core Architectural Principles
 
-- [x] O usuário não deve poder se cadastrar com um e-mail duplicado;
-- [x] O usuário não pode fazer 2 check-ins no mesmo dia;
-- [x] O usuário não pode fazer check-in se não estiver perto (100m) da academia;
-- [x] O check-in só pode ser validado até 20 minutos após ser criado;
-- [ ] O check-in só pode ser validado por administradores;
-- [ ] A academia só pode ser cadastrada por administradores;
+This project is built upon a foundation of established architectural principles to ensure robustness and flexibility:
 
-## RNFs (Requisitos não-funcionais)
+*   **SOLID**: The five principles (Single Responsibility, Open/Closed, Liskov Substitution, Interface Segregation, Dependency Inversion) guide the design of classes and modules, promoting maintainability and reducing coupling.
+*   **Clean Architecture**: The codebase is structured into distinct layers (Domain, Application, Infrastructure) with a strict dependency rule (dependencies flow inwards), isolating the core business logic from external concerns.
+*   **Domain-Driven Design (DDD)**: Concepts like focusing on the core domain (Users, Gyms, Check-ins) and using repository interfaces help model the business logic effectively.
 
-- [x] A senha do usuário precisa estar criptografada;
-- [x] Os dados da aplicação precisam estar persistidos em um banco PostgreSQL;
-- [x] Todas listas de dados precisam estar paginadas com 20 itens por página;
-- [x] O usuário deve ser identificado por um JWT (JSON Web Token) assinado com o algoritmo assimétrico RS256 para maior segurança;
+## Detailed Architecture Breakdown
 
-# API SOLID
+The application follows a layered architecture:
 
-API desenvolvida seguindo os princípios SOLID, Domain-Driven Design (DDD) e Clean Architecture com injeção de dependência via TSyringe.
+1.  **Domain Layer (`src/domains`)**:
+    *   The heart of the application, containing core business logic and entity definitions (implicit through repository interactions).
+    *   Defines repository interfaces (`IUserRepository`, `IGymRepository`, `ICheckInRepository`) using the Dependency Inversion Principle.
+    *   Completely independent of frameworks and infrastructure details.
 
-## Testes
+2.  **Application Layer (`src/application`)**:
+    *   Orchestrates use cases (e.g., `RegisterUserUseCase`, `FetchNearbyGymsUseCase`).
+    *   Contains Data Transfer Objects (DTOs) and validation schemas (using Zod) for data contracts.
+    *   Depends on Domain layer abstractions (interfaces).
 
-A aplicação implementa testes unitários para garantir a integridade dos casos de uso e regras de negócio:
+3.  **Infrastructure Layer (`src/infrastructure`)**:
+    *   Handles all external concerns and technical details.
+    *   Provides concrete implementations for repositories (e.g., `PrismaUsersRepository`).
+    *   Manages HTTP requests/responses via Controllers and Routes (using Fastify).
+    *   Configures database connections (Prisma).
+    *   Implements Dependency Injection setup (using TSyringe).
+    *   Contains Factories for object creation.
 
-### Testes Unitários
-Utilizamos o padrão InMemoryRepository para os testes unitários, permitindo testar os casos de uso sem dependência do banco de dados real. 
+4.  **Shared Layer (`src/shared`)**:
+    *   Holds reusable components across layers, such as custom error classes, utility functions (like the `Either` type for functional error handling), data presenters, and test helpers.
 
-Os testes unitários verificam:
-- Regras de negócio (como validação de email duplicado)
-- Transformação de dados (como hash de senha)
-- Fluxos de sucesso e erro
-Recentemente, os testes foram aprimorados para maior robustez, cobrindo mais cenários de borda e validações.
+**Dependency Flow:** `Infrastructure` -> `Application` -> `Domain`
 
-### Repositórios InMemory
-Implementamos repositórios em memória (InMemoryRepository) para cada entidade, simulando o comportamento dos repositórios reais sem a necessidade de um banco de dados. Isso permite:
-- Testes mais rápidos
-- Independência de infraestrutura externa
-- Isolamento de problemas
+## Design Patterns Implemented
 
-## Arquitetura
+Several design patterns are employed to solve common problems and enhance the design:
 
-A arquitetura está organizada nas seguintes camadas:
+1.  **Repository Pattern**: Abstracts data persistence logic behind interfaces, decoupling the application from specific database technologies.
+2.  **Dependency Injection (DI)**: Utilizes TSyringe to manage dependencies, promoting loose coupling and high testability. Dependencies are defined via interfaces and injected into constructors.
+3.  **Factory Pattern**: Used both for creating complex objects (like controllers with their dependencies injected) and for generating test data (e.g., using Faker).
+4.  **Use Case Pattern (Application Services)**: Encapsulates specific pieces of business logic into dedicated classes within the Application layer.
+5.  **Either Pattern**: For functional error handling, clearly distinguishing between successful results (`Right`) and errors (`Left`), making error management explicit and predictable.
+6.  **In-Memory Repository**: Specific implementations of repository interfaces used for fast and isolated unit/integration testing without needing a real database.
+7.  **Mapper Pattern**: Implicitly used for converting data between layers or formats (e.g., Prisma models to DTOs).
+8.  **Presenter Pattern**: Formats data specifically for the presentation layer (e.g., API responses).
 
-### Domains
-Contém as entidades de domínio e interfaces dos repositórios, seguindo o princípio de inversão de dependência.
+## Testing Strategy
 
-### Application
-Implementa os casos de uso (use cases) que contêm a lógica de negócio da aplicação. Também inclui DTOs e validações.
+Testing is a crucial part of this project, ensuring both individual components and overall application flows work correctly:
 
-### Infrastructure
-Contém implementações concretas como repositórios, controllers, factories e configurações de banco de dados.
+*   **Unit Tests**: Focused on testing individual use cases, domain logic, and utility functions in isolation. Vitest is used as the testing framework.
+*   **In-Memory Repositories**: These test doubles replace actual database interactions during unit tests, ensuring speed and isolation. They implement the same interfaces as the production repositories (`IUserRepository`, etc.).
+*   **End-to-End (E2E) Tests**:
+    *   Validate complete application flows, simulating real user interactions from HTTP request to database persistence and back.
+    *   Utilize `supertest` to make HTTP requests against the running Fastify application instance (`app.server`).
+    *   Run against a dedicated test database (managed via `prismaTestClient` and environment variables configured in `vitest.config.e2e.ts`'s setup file - `src/shared/test/setup-e2e.ts`), ensuring isolation from development/production data.
+    *   Employ setup and teardown hooks (`beforeAll`, `afterAll`, `afterEach`) within Vitest to manage the application lifecycle and database state (e.g., cleaning up data between tests).
+    *   Helper utilities (like `src/shared/utils/test-auth.ts::createAndAuthenticateE2EUser`) are used to streamline common E2E setup tasks, such as user creation and authentication, reducing boilerplate code in test files.
+    *   E2E test configuration is managed separately in `vitest.config.e2e.ts`.
 
-### Shared
-Componentes compartilhados entre diferentes partes da aplicação, como utilities, erros e presenters.
+## API Endpoints Overview
 
-## Segurança
+The API exposes the following main endpoints, grouped by resource:
 
-A aplicação implementa várias camadas de segurança:
+**Users (`/users`)**
+*   `POST /`: Register a new user.
+*   `POST /auth`: Authenticate a user and receive a JWT.
+*   `GET /me` (Authenticated): Get the profile of the currently logged-in user.
 
-### Autenticação com JWT RS256
+**Gyms (`/gyms`)**
+*   `POST /` (Authenticated): Register a new gym (potentially admin-only).
+*   `GET /search` (Authenticated): Search for gyms by name (paginated).
+*   `GET /nearby` (Authenticated): Fetch gyms within a 10km radius based on user coordinates (paginated).
+*   `POST /{gymId}/check-ins` (Authenticated): Create a check-in for the specified gym.
 
-Utilizamos JSON Web Tokens (JWT) com o algoritmo de assinatura assimétrica RS256 para autenticação:
+**Check-ins (`/check-ins`)**
+*   `GET /history` (Authenticated): Fetch the logged-in user's check-in history (paginated).
+*   `GET /metrics` (Authenticated): Get the total check-in count for the logged-in user.
+*   `PATCH /{checkInId}/validate` (Authenticated): Validate a specific check-in (potentially admin-only).
 
-- **Segurança Avançada**: Diferente do algoritmo simétrico HS256 (que usa uma única chave secreta), o RS256 utiliza um par de chaves público/privada.
-- **Assinatura Assimétrica**: A chave privada (guardada no servidor) assina o token, enquanto a chave pública pode verificar a autenticidade do token.
-- **Vantagens de Segurança**:
-  - Apenas o servidor precisa manter a chave privada segura
-  - Serviços externos podem verificar tokens usando apenas a chave pública
-  - Maior resistência a ataques de força bruta
+## API Documentation (Swagger)
 
-### Proteção de Senhas
+Interactive API documentation is available via Swagger UI at the `/docs` endpoint when the application is running. This allows developers to explore endpoints, view schemas, and test requests directly in the browser.
 
-- Senhas são armazenadas utilizando hash bcrypt
-- Não armazenamos senhas em texto puro em nenhum momento
-- Comparações de senha são feitas de forma segura contra timing attacks
+## Security Measures
 
-### Validação de Dados
+Security is addressed through multiple mechanisms:
 
-- Todos os dados de entrada são validados usando schemas Zod
-- Validações incluem verificações de formato, tamanho e valores permitidos
+*   **Authentication with JWT (RS256)**:
+    *   Uses JSON Web Tokens signed with the asymmetric RS256 algorithm.
+    *   **Asymmetric Signing**: Employs a public/private key pair. The private key (kept secure on the server) signs the token, while the public key can be distributed to verify the token's authenticity without exposing the signing key. This is more secure than symmetric algorithms (like HS256) for many scenarios.
+    *   JWTs identify authenticated users for subsequent requests.
+*   **Password Hashing**: User passwords are securely hashed using `bcrypt` before being stored. Plain text passwords are never stored.
+*   **Input Validation**: All incoming data (request bodies, query parameters) is rigorously validated using Zod schemas to prevent invalid or malicious data from entering the system.
 
-## Tratamento de Erros
+## Error Handling
 
-Utilizamos o padrão funcional Either para lidar com erros de forma explícita:
+*   The application utilizes a functional approach to error handling via the **Either Pattern** (`Left` for errors, `Right` for success).
+*   Custom error classes are defined in `src/shared/errors` for specific failure scenarios (e.g., `ResourceNotFoundError`, `InvalidCredentialsError`).
+*   A global error handler middleware likely exists to catch unhandled exceptions and format error responses consistently.
 
-- `Left<Error>` - Representa falhas ou erros no processamento
-- `Right<Result>` - Representa o sucesso e contém o resultado da operação
+## Dependency Injection with TSyringe
 
-Este padrão nos permite tratar erros como valores de primeira classe, tornando o código mais previsível e testável.
+*   **TSyringe** is the chosen library for managing Dependency Injection (DI), promoting loose coupling and enhancing testability.
+*   **Configuration (`src/infrastructure/container/container.ts`)**:
+    *   This central file registers all application dependencies with the TSyringe container.
+    *   Concrete implementations (e.g., `PrismaUserRepository`) are registered as singletons against their corresponding interfaces (e.g., `IUserRepository`) using string tokens.
+    *   Use Cases and Controllers are typically registered using their class names (`RegisterUserUseCase.name`).
+    *   Core services like the `PrismaClient` instance are also registered, making them injectable into other classes (like repositories).
+*   **Usage**:
+    *   Classes needing dependencies are typically decorated with `@injectable()`.
+    *   Dependencies are declared in constructors using the `@inject("TokenName")` or `@inject(ClassName.name)` decorator, specifying the token or class name registered in the container.
+*   **Factories (`src/infrastructure/factories/`)**:
+    *   Simple functions (like `makeUserController`) act as factories. Their primary role is to resolve specific instances (usually controllers or use cases) directly from the configured TSyringe container (`container.resolve(ControllerName)`).
+    *   These factories abstract the container interaction, making it cleaner to instantiate objects, especially within route definitions.
+*   **Benefits**: This setup significantly improves testability, as dependencies can be easily mocked or replaced during tests by registering alternative implementations in the container. It also centralizes object creation logic.
 
-## Injeção de Dependência
+## Business Rules (Examples)
 
-Utilizamos o TSyringe para injeção de dependência, permitindo:
+*   Users cannot register with duplicate emails.
+*   Users cannot perform more than one check-in per day.
+*   Check-ins are only allowed if the user is within 100 meters of the gym.
+*   Check-ins must be validated within 20 minutes of creation.
+*   (Potential) Check-in validation and gym registration might be restricted to administrators.
 
-1. **Desacoplamento**: As classes não instanciam suas dependências diretamente
-2. **Testabilidade**: Facilita a criação de mocks para testes
-3. **Manutenção**: Centraliza a criação de objetos
+## Non-Functional Requirements
 
-### Container
+*   User passwords must be encrypted.
+*   Application data must be persisted in a PostgreSQL database.
+*   API responses returning lists must be paginated (e.g., 20 items per page).
+*   User identification relies on JWT signed with RS256.
 
-O arquivo `container.ts` registra todas as dependências no container do TSyringe. Ele é inicializado no início da aplicação (em `app.ts`).
+## Technologies Used
 
-### Factories
+*   **Language**: TypeScript
+*   **Runtime**: Node.js
+*   **Web Framework**: Fastify
+*   **ORM**: Prisma
+*   **Database**: PostgreSQL
+*   **Testing**: Vitest
+*   **Dependency Injection**: TSyringe
+*   **Validation**: Zod
+*   **Linting/Formatting**: ESLint, Prettier
+*   **Build Tool**: esbuild / tsup / Vite
+*   **Containerization**: Docker
 
-As factories são utilizadas para obter instâncias dos controllers e use cases a partir do container do TSyringe, encapsulando a lógica de criação.
+## Benefits of this Approach
 
-## Estrutura de Arquivos
+*   **Maintainability**: Clear separation of concerns and adherence to SOLID makes the code easier to understand, modify, and debug.
+*   **Testability**: DI and the use of interfaces/repositories allow for comprehensive unit and integration testing.
+*   **Scalability**: The modular design allows features to be added or changed with minimal impact on other parts of the system.
+*   **Robustness**: Explicit error handling and strong typing contribute to a more reliable application.
+*   **Flexibility**: Low coupling means components (like the database or web framework) can be swapped out more easily if needed.
 
-```
-src/
-├── shared/                   # Componentes compartilhados
-│   ├── errors/               # Definições de erros da aplicação
-│   │   └── interfaces/       # Interfaces para erros
-│   ├── presenters/           # Formatadores de resposta
-│   └── utils/                # Utilitários, como mappers e Either
-├── domains/                  # Camada de domínio
-│   └── users/                # Domínio de usuários
-│       └── repositories/     # Interfaces de repositórios
-│           └── in-memory/    # Implementações em memória para testes
-├── application/              # Camada de aplicação
-│   └── users/                # Aplicação para usuários
-│       ├── dtos/             # Data Transfer Objects
-│       └── use-cases/        # Casos de uso com testes
-├── infrastructure/           # Camada de infraestrutura
-│   ├── database/             # Configuração de banco de dados
-│   ├── controllers/          # Controllers da aplicação
-│   │   └── interfaces/       # Interfaces dos controllers
-│   ├── factories/            # Factories para criação de objetos
-│   ├── http/                 # Configuração HTTP e rotas
-│   └── repositories/         # Implementações concretas dos repositórios
-└── container.ts              # Configuração do container de injeção de dependência
-```
-
-## Padrões Implementados
-
-1. **Repository Pattern**: Abstrai o acesso a dados através de interfaces
-2. **Dependency Injection**: Utiliza TSyringe para injeção de dependências
-3. **Factory Pattern**: Encapsula criação de objetos complexos (e geração de dados de teste com Faker)
-4. **Use Case Pattern**: Encapsula lógica de negócio em unidades coesas
-5. **Either Pattern**: Tratamento funcional de erros
-6. **InMemory Repository**: Repositórios em memória para testes unitários
-7. **Mapper Pattern**: Conversão entre diferentes representações de dados
-8. **Presenter Pattern**: Formatação de dados para apresentação
-
-## Benefícios da Arquitetura
-
-- **Modularidade**: Componentes bem definidos com responsabilidades claras
-- **Testabilidade**: Testes unitários com repositórios InMemory
-- **Escalabilidade**: Novos features podem ser adicionados sem modificar código existente
-- **Manutenibilidade**: Código organizado e fácil de entender
-- **Robustez**: Tratamento de erros explícito e consistente
+This project demonstrates a commitment to writing high-quality, professional backend code using modern best practices.
