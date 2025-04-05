@@ -3,10 +3,11 @@
   "version": "1.0.0",
   "description": "GymPass style app.",
   "main": "index.js",
+  "types": "module",
   "scripts": {
     "start": "node build/server.js",
     "start:dev": "tsx watch src/server.ts",
-    "build": "tsup src --out-dir build",
+    "build": "node esbuild.config.js",
     "lint": "eslint src --ext .ts",
     "test": "vitest run",
     "test:watch": "vitest",

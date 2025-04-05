@@ -1,8 +1,9 @@
 import request from 'supertest'
 import { app } from '@/app'
-import { faker } from '@faker-js/faker'
-import { prismaTestClient } from '@/shared/test/setup-e2e' // Import test client
-import { Decimal } from '@prisma/client/runtime/library' // Import Decimal
+import { prismaTestClient } from '@/shared/test/setup-e2e'
+import { Decimal } from '@prisma/client/runtime/library'
+import { createAndAuthenticateE2EUser } from '@/shared/utils/test-auth'
+import { MakeGym } from '@/shared/test/factories/make-gym'
 
 describe('Create Check-in (E2E)', () => {
   let token: string
@@ -10,19 +11,9 @@ describe('Create Check-in (E2E)', () => {
 
   beforeAll(async () => {
     await app.ready()
-    // Create and authenticate user within beforeAll
-    const email = faker.internet.email()
-    const password = 'ValidP@ssw0rd'
-    await request(app.server).post('/users').send({
-      name: faker.person.fullName(),
-      email,
-      password,
-    })
-    const authResponse = await request(app.server).post('/users/auth').send({
-      email,
-      password,
-    })
-    token = authResponse.body.accessToken // Correct property name
+    // Usa a função utilitária para autenticar o usuário
+    const { accessToken } = await createAndAuthenticateE2EUser(app)
+    token = accessToken
   })
 
   afterAll(async () => {
@@ -31,14 +22,13 @@ describe('Create Check-in (E2E)', () => {
 
   it('should be able to create a check-in', async () => {
     // Create gym directly using prismaTestClient
+    const createGym = MakeGym({
+      latitude: new Decimal(-27.2092052),
+      longitude: new Decimal(-49.6401091),
+    })
+    // Create gym using the factory
     const gym = await prismaTestClient.gym.create({
-      data: {
-        title: 'JavaScript Gym',
-        description: 'Some description.',
-        phone: null,
-        latitude: new Decimal(-27.2092052), // Use Decimal
-        longitude: new Decimal(-49.6401091), // Use Decimal
-      },
+      data: createGym,
     })
 
     gymId = gym.id // Store the gym ID for the next test
@@ -59,7 +49,7 @@ describe('Create Check-in (E2E)', () => {
 
     // Attempt second check-in on the same day
     const response = await request(app.server)
-      .post(`/gyms/${gymId}/check-ins`) // Use the stored gymId
+      .post(`/gyms/${gymId}/check-ins`)
       .set('Authorization', `Bearer ${token}`)
       .send({
         userLatitude: -27.2092052,
@@ -70,10 +60,10 @@ describe('Create Check-in (E2E)', () => {
     expect(response.body).toEqual(
       // Expect ConflictError based on corrected use case logic
       expect.objectContaining({
-        error: "TooManyRequestsError",
+        error: 'TooManyRequestsError',
         message:
-          "You can only check in to one gym per day. Please try again tomorrow.",
-      })
-    );
+          'You can only check in to one gym per day. Please try again tomorrow.',
+      }),
+    )
   })
 })

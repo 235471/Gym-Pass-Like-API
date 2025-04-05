@@ -1,36 +1,20 @@
 import request from 'supertest'
 import { app } from '@/app'
-import { faker } from '@faker-js/faker'
 import { prismaTestClient } from '@/shared/test/setup-e2e'
+import { createAndAuthenticateE2EUser } from '@/shared/utils/test-auth'
+import { MakeGym } from '@/shared/test/factories/make-gym'
 
 describe('Check-in History (E2E)', () => {
   let token: string
-  let userId: string | undefined
+  let userId: string
 
   beforeAll(async () => {
     await app.ready()
-    // Create and authenticate user within beforeAll
-    const email = faker.internet.email()
-    const password = 'ValidP@ssw0rd'
-    await request(app.server).post('/users').send({
-      name: faker.person.fullName(),
-      email,
-      password,
-    })
-    const authResponse = await request(app.server).post('/users/auth').send({
-      email,
-      password,
-    })
-    token = authResponse.body.accessToken // Correct property name
-    userId = (
-      await prismaTestClient.user.findUnique({
-        where: { email },
-        select: { id: true },
-      })
-    )?.id
-    if (!userId) {
-      throw new Error('User ID not found after user creation.')
-    }
+    // Authenticate the user
+    const { accessToken, userId: authenticatedUserId } =
+      await createAndAuthenticateE2EUser(app)
+    token = accessToken
+    userId = authenticatedUserId
   })
 
   afterAll(async () => {
@@ -45,13 +29,7 @@ describe('Check-in History (E2E)', () => {
 
   it("should be able to list the user's check-in history", async () => {
     const gym = await prismaTestClient.gym.create({
-      data: {
-        title: 'History Test Gym',
-        description: null,
-        phone: null,
-        latitude: -27.2092052,
-        longitude: -49.6401091,
-      },
+      data: MakeGym(),
     })
 
     // Create some check-ins for the user
@@ -59,11 +37,11 @@ describe('Check-in History (E2E)', () => {
       data: [
         {
           gymId: gym.id,
-          userId: userId!,
+          userId,
         },
         {
           gymId: gym.id,
-          userId: userId!,
+          userId,
         },
       ],
     })
@@ -74,10 +52,10 @@ describe('Check-in History (E2E)', () => {
       .send()
 
     expect(response.statusCode).toEqual(200)
-    expect(response.body).toBeInstanceOf(Array)
-    expect(response.body).toHaveLength(2)
+    expect(response.body.checkIns).toBeInstanceOf(Array)
+    expect(response.body.checkIns).toHaveLength(2)
     // Check structure based on CheckInPresenter output
-    expect(response.body).toEqual([
+    expect(response.body.checkIns).toEqual([
       expect.objectContaining({ gymId: gym.id, userId }),
       expect.objectContaining({ gymId: gym.id, userId }),
     ])
@@ -86,24 +64,24 @@ describe('Check-in History (E2E)', () => {
   it('should be able to list paginated check-in history', async () => {
     // Use token and userId from beforeAll
     const gym = await prismaTestClient.gym.create({
-      data: { title: 'Paginated History Gym', latitude: 0, longitude: 0 },
+      data: MakeGym(),
     })
 
     // Create 22 check-ins
     for (let i = 1; i <= 22; i++) {
       await prismaTestClient.checkIn.create({
-        data: { gymId: gym.id, userId: userId! },
+        data: { gymId: gym.id, userId },
       })
     }
 
     const response = await request(app.server)
       .get('/check-ins/history')
-      .query({ page: 2 }) // Request page 2
+      .query({ page: 2 })
       .set('Authorization', `Bearer ${token}`)
       .send()
 
     expect(response.statusCode).toEqual(200)
-    expect(response.body).toBeInstanceOf(Array)
-    expect(response.body).toHaveLength(2)
+    expect(response.body.checkIns).toBeInstanceOf(Array)
+    expect(response.body.checkIns).toHaveLength(2)
   })
 })

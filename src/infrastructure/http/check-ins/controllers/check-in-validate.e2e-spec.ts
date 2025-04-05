@@ -1,38 +1,24 @@
 import request from 'supertest'
 import { app } from '@/app'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
-import { faker } from '@faker-js/faker'
 import { prismaTestClient } from '@/shared/test/setup-e2e'
 import { Decimal } from '@prisma/client/runtime/library'
 import { randomUUID } from 'node:crypto'
-import bcrypt from 'bcryptjs' // Import bcryptjs
+import { createAndAuthenticateE2EUser } from '@/shared/utils/test-auth'
+import { MakeGym } from '@/shared/test/factories/make-gym'
 
 describe('Validate Check-in (E2E)', () => {
   let token: string
-  let userId: string // Declare userId
+  let userId: string
 
   beforeAll(async () => {
     await app.ready()
 
-    // Create and authenticate user within beforeAll
-    const email = faker.internet.email()
-    const password = 'ValidP@ssw0rd'
-    // Create user directly
-    const user = await prismaTestClient.user.create({
-      data: {
-        name: faker.person.fullName(),
-        email,
-        passwordHash: await bcrypt.hash(password, 6), // Use imported bcrypt
-      },
-    })
-    userId = user.id // Store userId
-
-    // Authenticate user
-    const authResponse = await request(app.server).post('/users/auth').send({
-      email,
-      password,
-    })
-    token = authResponse.body.accessToken
+    // Authenticate the user
+    const { accessToken, userId: authenticatedUserId } =
+      await createAndAuthenticateE2EUser(app)
+    token = accessToken
+    userId = authenticatedUserId
   })
 
   afterAll(async () => {
@@ -56,28 +42,26 @@ describe('Validate Check-in (E2E)', () => {
 
   it('should be able to validate a check-in', async () => {
     // 1. Create gym directly
+    const gymPayload = MakeGym({
+      latitude: new Decimal(-27.2092052),
+      longitude: new Decimal(-49.6401091),
+    })
+
     const gym = await prismaTestClient.gym.create({
-      data: {
-        title: 'Academia JavaScript',
-        description: 'A melhor academia para devs',
-        phone: '11999999999',
-        latitude: new Decimal(-27.2092052),
-        longitude: new Decimal(-49.6401091),
-      },
+      data: gymPayload,
     })
 
     // 2. Create check-in directly for the authenticated user
     let checkIn = await prismaTestClient.checkIn.create({
       data: {
         gymId: gym.id,
-        userId: userId, // Use userId from beforeAll
+        userId,
       },
     })
-    const checkInId = checkIn.id
 
     // 3. Validate the check-in via API
     const validateResponse = await request(app.server)
-      .patch(`/check-ins/${checkInId}/validate`)
+      .patch(`/check-ins/${checkIn.id}/validate`)
       .set('Authorization', `Bearer ${token}`)
       .send()
 
@@ -85,7 +69,7 @@ describe('Validate Check-in (E2E)', () => {
 
     // 4. Check if the check-in was validated directly in the DB
     checkIn = await prismaTestClient.checkIn.findUniqueOrThrow({
-      where: { id: checkInId },
+      where: { id: checkIn.id },
     })
 
     expect(checkIn.validateAt).toEqual(expect.any(Date))

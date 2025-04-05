@@ -66,13 +66,15 @@ export async function gymRoutes(app: FastifyInstance) {
           page: z.coerce.number().default(1),
         }),
         response: {
-          200: z.array(
-            z.object({
-              title: z.string(),
-              description: z.string().optional(),
-              phone: z.string().optional(),
-            }),
-          ),
+          200: z.object({
+            gyms: z.array(
+              z.object({
+                title: z.string(),
+                description: z.string().optional(),
+                phone: z.string().optional(),
+              }),
+            ),
+          }),
           400: z.object({
             error: z.literal('ValidationError'),
             message: z.array(
@@ -107,13 +109,15 @@ export async function gymRoutes(app: FastifyInstance) {
           longitude: z.coerce.number(),
         }),
         response: {
-          200: z.array(
-            z.object({
-              title: z.string(),
-              description: z.string().optional(),
-              phone: z.string().optional(),
-            }),
-          ),
+          200: z.object({
+            gyms: z.array(
+              z.object({
+                title: z.string(),
+                description: z.string().optional(),
+                phone: z.string().optional(),
+              }),
+            ),
+          }),
           400: z.object({
             error: z.literal('ValidationError'),
             message: z.array(

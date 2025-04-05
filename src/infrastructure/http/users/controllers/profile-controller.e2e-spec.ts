@@ -1,6 +1,6 @@
 import request from 'supertest'
 import { app } from '@/app'
-import { faker } from '@faker-js/faker'
+import { createAndAuthenticateE2EUser } from '@/shared/utils/test-auth'
 
 describe('Profile Controller (E2E)', async () => {
   beforeAll(async () => {
@@ -12,23 +12,12 @@ describe('Profile Controller (E2E)', async () => {
   })
 
   it('should be able to get a authenticated user profile by id', async () => {
-    const email = faker.internet.email()
-    const password = 'ValidP@ssw0rd'
-
-    await request(app.server).post('/users').send({
-      name: faker.person.fullName(),
-      email,
-      password,
-    })
-
-    const authResponse = await request(app.server).post('/users/auth').send({
-      email,
-      password,
-    })
+    // Authenticate the user
+    const { accessToken } = await createAndAuthenticateE2EUser(app)
 
     const response = await request(app.server)
       .get('/users/me')
-      .set('Authorization', `Bearer ${authResponse.body.accessToken}`)
+      .set('Authorization', `Bearer ${accessToken}`)
 
     expect(response.statusCode).toBe(200)
     expect(response.body).toEqual(

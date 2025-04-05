@@ -22,13 +22,15 @@ export async function checkInsRoutes(app: FastifyInstance) {
           page: z.coerce.number().default(1),
         }),
         response: {
-          200: z.array(
-            z.object({
-              id: z.string().uuid(),
-              userId: z.string().uuid(),
-              gymId: z.string().uuid(),
-            }),
-          ),
+          200: z.object({
+            checkIns: z.array(
+              z.object({
+                id: z.string().uuid(),
+                userId: z.string().uuid(),
+                gymId: z.string().uuid(),
+              }),
+            ),
+          }),
           400: z.object({
             error: z.literal('ValidationError'),
             message: z.array(
@@ -59,7 +61,9 @@ export async function checkInsRoutes(app: FastifyInstance) {
         tags: ['check-ins'],
         security: [{ bearerAuth: [] }],
         response: {
-          200: z.number(),
+          200: z.object({
+            checkInsCount: z.number(),
+          }),
           400: z.object({
             error: z.literal('ValidationError'),
             message: z.array(

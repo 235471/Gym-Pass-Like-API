@@ -1,10 +1,10 @@
-import { IUserRepository } from '@/domains/users/repository/IUserRepository'
-import { PrismaClient, User } from '@prisma/client'
-import { injectable, inject } from 'tsyringe'
-import { Either, left, right } from '@/shared/utils/either'
-import { IError } from '@/shared/errors/interfaces/error'
-import { InternalServerError } from '@/shared/errors/internal-server-error'
-import { CreateUserDTO } from '@/application/users/dtos/user-dto'
+import { IUserRepository } from "@/domains/users/repository/IUserRepository";
+import { PrismaClient, User } from "@prisma/client";
+import { injectable, inject } from "tsyringe";
+import { Either, left, right } from "@/shared/utils/either";
+import { IError } from "@/shared/errors/interfaces/error";
+import { InternalServerError } from "@/shared/errors/internal-server-error";
+import { CreateUserDTO } from "@/application/dtos/user-dto";
 
 @injectable()
 export class PrismaUserRepository implements IUserRepository {
@@ -14,11 +14,11 @@ export class PrismaUserRepository implements IUserRepository {
     try {
       const user = await this.prisma.user.create({
         data,
-      })
+      });
 
-      return right(user)
+      return right(user);
     } catch (error) {
-      return left(new InternalServerError('Error creating user'))
+      return left(new InternalServerError("Error creating user"));
     }
   }
 
@@ -28,11 +28,11 @@ export class PrismaUserRepository implements IUserRepository {
         where: {
           email,
         },
-      })
+      });
 
-      return right(user)
+      return right(user);
     } catch (error) {
-      return left(new InternalServerError('Error finding user by email'))
+      return left(new InternalServerError("Error finding user by email"));
     }
   }
 
@@ -42,11 +42,11 @@ export class PrismaUserRepository implements IUserRepository {
         where: {
           id,
         },
-      })
+      });
 
-      return right(user)
+      return right(user);
     } catch (error) {
-      return left(new InternalServerError('Error finding user by id'))
+      return left(new InternalServerError("Error finding user by id"));
     }
   }
 }

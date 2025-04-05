@@ -1,5 +1,5 @@
-import { User } from '@prisma/client'
-import { UserDTO } from '@/application/users/dtos/user-dto'
+import { User } from "@prisma/client";
+import { UserDTO } from "@/application/dtos/user-dto";
 
 export class UserMapper {
   static toDTO(user: User): UserDTO {
@@ -10,6 +10,6 @@ export class UserMapper {
       password: user.passwordHash,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
-    }
+    };
   }
 }
