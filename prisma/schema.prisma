@@ -13,9 +13,10 @@ model User {
   email        String    @unique
   passwordHash String    @map("password_hash")
   createdAt    DateTime  @default(now()) @map("created_at")
-  updatedAt    DateTime? @updatedAt @map("udpated_at")
+  updatedAt    DateTime? @updatedAt @map("updated_at") // Corrected typo from udpated_at
 
-  checkIns CheckIn[]
+  checkIns      CheckIn[]
+  refreshTokens RefreshToken[]
 
   @@map("users")
 }
@@ -44,4 +45,16 @@ model Gym {
   checkIns CheckIn[]
 
   @@map("gyms")
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  expiresAt DateTime @map("expires_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  userId    String   @map("user_id")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("refresh_tokens")
+  @@index([userId])
 }

@@ -5,6 +5,7 @@ import { AuthenticateUseCase } from "@/application/use-cases/authenticate";
 import { InternalServerError } from "@/shared/errors/internal-server-error";
 import { AuthenticateUserDTO } from "@/application/dtos/user-dto";
 import { AuthenticateService } from "@/application/services/authenticate-service";
+import { AuthenticateSuccessResponse } from "@/application/use-cases/authenticate"; // Import the response type
 
 @injectable()
 export class AuthenticateController {
@@ -26,15 +27,15 @@ export class AuthenticateController {
         return handleError(result.value, reply);
       }
 
-      // Get user from use case result
-      const user = result.value;
+      const { user, refreshToken } = result.value;
 
-      // Generate access token using the service
       const accessToken = this.authenticateService.generateToken(user);
 
-      // Return the access token in the response body
-      return reply.status(200).send({ accessToken });
+      return reply.status(200).send({ accessToken, refreshToken });
     } catch (error) {
+      if (process.env.NODE_ENV !== 'production') {
+        console.error("AuthenticateController Error:", error);
+      }
       return handleError(
         new InternalServerError(
           error instanceof Error ? error.message : "Internal server error"

@@ -2,14 +2,17 @@ import { FastifyInstance } from 'fastify'
 import { z } from 'zod'
 import { makeCheckInHistoryController } from '@/infrastructure/factories/check-ins/makeCheckInHistoryController'
 import { makeCheckInValidateController } from '@/infrastructure/factories/check-ins/makeCheckInValidateController'
-import { makeCheckInMetricsController } from '@/infrastructure/factories/check-ins/makeCheckInMetricsController' // Import metrics factory
+import { makeCheckInMetricsController } from '@/infrastructure/factories/check-ins/makeCheckInMetricsController'
+import {
+  generalErrorSchema,
+  validationErrorSchema,
+} from '@/application/schemas/common-schemas'
 
 export async function checkInsRoutes(app: FastifyInstance) {
   const checkInHistoryController = makeCheckInHistoryController()
   const checkInValidateController = makeCheckInValidateController()
   const checkInMetricsController = makeCheckInMetricsController()
 
-  // Fetch Check-in History Route
   app.get(
     '/history',
     {
@@ -31,27 +34,14 @@ export async function checkInsRoutes(app: FastifyInstance) {
               }),
             ),
           }),
-          400: z.object({
-            error: z.literal('ValidationError'),
-            message: z.array(
-              z.object({
-                field: z.string(),
-                message: z.string(),
-              }),
-            ),
-          }),
-          500: z.object({
-            statusCode: z.number(),
-            error: z.string(),
-            message: z.string(),
-          }),
+          400: validationErrorSchema,
+          500: generalErrorSchema,
         },
       },
     },
     checkInHistoryController.history,
   )
 
-  // Get User Metrics Route
   app.get(
     '/metrics',
     {
@@ -64,27 +54,14 @@ export async function checkInsRoutes(app: FastifyInstance) {
           200: z.object({
             checkInsCount: z.number(),
           }),
-          400: z.object({
-            error: z.literal('ValidationError'),
-            message: z.array(
-              z.object({
-                field: z.string(),
-                message: z.string(),
-              }),
-            ),
-          }),
-          500: z.object({
-            statusCode: z.number(),
-            error: z.string(),
-            message: z.string(),
-          }),
+          400: validationErrorSchema,
+          500: generalErrorSchema,
         },
       },
     },
     checkInMetricsController.metric,
   )
 
-  // Validate Check-in Route
   app.patch(
     '/:checkInId/validate',
     {
@@ -98,30 +75,10 @@ export async function checkInsRoutes(app: FastifyInstance) {
         }),
         response: {
           204: z.null(),
-          400: z.object({
-            error: z.literal('ValidationError'),
-            message: z.array(
-              z.object({
-                field: z.string(),
-                message: z.string(),
-              }),
-            ),
-          }),
-          404: z.object({
-            statusCode: z.number(),
-            error: z.literal('NotFoundError'),
-            message: z.string(),
-          }),
-          422: z.object({
-            statusCode: z.number(),
-            error: z.literal('UnprocessableEntityError'),
-            message: z.string(),
-          }),
-          500: z.object({
-            statusCode: z.number(),
-            error: z.string(),
-            message: z.string(),
-          }),
+          400: validationErrorSchema,
+          404: generalErrorSchema,
+          422: generalErrorSchema,
+          500: generalErrorSchema,
         },
       },
     },

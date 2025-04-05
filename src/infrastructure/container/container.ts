@@ -13,11 +13,13 @@ import { AuthenticateService } from "@/application/services/authenticate-service
 import { IUserRepository } from "@/domains/users/repository/IUserRepository";
 import { IGymRepository } from "@/domains/gyms/repository/IGymRepository";
 import { ICheckInRepository } from "@/domains/checkin/repository/ICheckInRepository";
+import { IRefreshTokenRepository } from "@/domains/users/repository/IRefreshTokenRepository";
 import { PrismaClient } from "@prisma/client";
 import { prisma } from "../database/prisma";
 import { PrismaUserRepository } from "../repositories/prisma-users-repository";
 import { PrismaGymsRepository } from "../repositories/prisma-gyms-repository";
 import { PrismaCheckInRepository } from "../repositories/prisma-check-ins-repository";
+import { PrismaRefreshTokenRepository } from "../repositories/prisma-refresh-token-repository";
 import { AuthenticateController } from "../http/users/controllers/authenticate-controller";
 import { UserRegisterController } from "../http/users/controllers/user-register-controller";
 import { GymRegisterController } from "../http/gyms/controllers/gym-register";
@@ -40,6 +42,10 @@ container.registerSingleton<IGymRepository>(
 container.registerSingleton<ICheckInRepository>(
   "CheckInRepository",
   PrismaCheckInRepository
+);
+container.registerSingleton<IRefreshTokenRepository>(
+  "RefreshTokenRepository",
+  PrismaRefreshTokenRepository
 );
 
 // Register the global PrismaClient instance so repositories can inject it
@@ -65,6 +71,10 @@ container.registerSingleton(
   ValidateCheckInUseCase.name,
   ValidateCheckInUseCase
 );
+import { RefreshTokenUseCase } from "@/application/use-cases/refresh-token";
+container.registerSingleton(RefreshTokenUseCase.name, RefreshTokenUseCase);
+import { LogoutUseCase } from "@/application/use-cases/logout";
+container.registerSingleton(LogoutUseCase.name, LogoutUseCase);
 
 // Registering Services
 container.registerSingleton(AuthenticateService.name, AuthenticateService);

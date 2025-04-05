@@ -1,19 +1,17 @@
-import { UserDTO } from "../dtos/user-dto";
+import { UserProfileDTO } from "../dtos/user-dto"; // Import UserProfileDTO instead of UserDTO
 import { injectable } from "tsyringe";
 import jwt from "jsonwebtoken";
 import { env } from "@/env";
 
 @injectable()
 export class AuthenticateService {
-  generateToken(user: UserDTO): string {
-    // Decode the Base64 private key before using it
+  generateToken(user: UserProfileDTO): string {
     const privateKey = Buffer.from(env.JWT_PRIVATE_KEY, "base64");
 
-    // Generate JWT
     const accessToken = jwt.sign({}, privateKey, {
       algorithm: "RS256",
       subject: user.id,
-      expiresIn: "7d", // Token expires in 7 days
+      expiresIn: "7d",
     });
 
     return accessToken;

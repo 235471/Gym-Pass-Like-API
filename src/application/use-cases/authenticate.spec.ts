@@ -1,4 +1,5 @@
 import { InMemoryUsersRepository } from '@/domains/users/repository/in-memory/in-memory-user-repository'
+import { InMemoryRefreshTokenRepository } from '@/domains/users/repository/in-memory/in-memory-refresh-token-repository' // Import in-memory refresh repo
 import { hash } from 'bcryptjs'
 import { AuthenticateUseCase } from './authenticate'
 import { makeUser } from '@/shared/test/factories/make-user'
@@ -6,62 +7,20 @@ import { InvalidCredentialsError } from '@/shared/errors/invalid-credentials-err
 
 describe('Authenticate Use Case test suite', () => {
   let inMemoryUsersRepository: InMemoryUsersRepository
+  let inMemoryRefreshTokenRepository: InMemoryRefreshTokenRepository // Declare refresh repo
   let sut: AuthenticateUseCase
 
   beforeEach(() => {
     inMemoryUsersRepository = new InMemoryUsersRepository()
-    sut = new AuthenticateUseCase(inMemoryUsersRepository)
+    inMemoryRefreshTokenRepository = new InMemoryRefreshTokenRepository() // Instantiate refresh repo
+    sut = new AuthenticateUseCase(
+      inMemoryUsersRepository,
+      inMemoryRefreshTokenRepository // Pass refresh repo to constructor
+    )
   })
 
-  it('should be able to authenticate an user', async () => {
-    // Arrange: Create a user directly in the repository
-    const userData = makeUser()
-    const passwordHash = await hash(userData.password, 6) // Use bcryptjs to hash the password
-
-    await inMemoryUsersRepository.create({
-      name: userData.name,
-      email: userData.email,
-      passwordHash,
-    })
-
-    // Act: Attempt to authenticate
-    const result = await sut.execute({
-      email: userData.email,
-      password: userData.password, // Use the original password for login attempt
-    })
-
-    // Assert: Check for successful authentication and token generation
-    expect(result.isRight()).toBeTruthy()
-    if (result.isRight()) {
-      const authenticatedUser = result.value
-      expect(authenticatedUser.id).toBeDefined()
-      expect(authenticatedUser.email).toBe(userData.email)
-      expect(authenticatedUser.name).toBe(userData.name)
-      expect(authenticatedUser).not.toHaveProperty('passwordHash')
-    }
-  })
-
-  it('should not be able to authenticate with wrong email', async () => {
-    // Arrange: No user is created with this email
-    const loginData = makeUser() // Use factory for login attempt data
-
-    // Act: Attempt to authenticate
-    const result = await sut.execute({
-      email: 'wrong.email@example.com',
-      password: loginData.password,
-    })
-
-    // Assert: Check for authentication failure (UnauthorizedError)
-    expect(result.isLeft()).toBeTruthy()
-    if (result.isLeft()) {
-      const error = result.value
-      expect(error).toBeInstanceOf(InvalidCredentialsError)
-      expect(error.message).toBe('Invalid credentials')
-    }
-  })
-
-  it('should not be able to authenticate with wrong password', async () => {
-    // Arrange: Create a user
+  it('should be able to authenticate an user and return tokens', async () => {
+    // Arrange
     const userData = makeUser()
     const passwordHash = await hash(userData.password, 6)
 
@@ -71,13 +30,66 @@ describe('Authenticate Use Case test suite', () => {
       passwordHash,
     })
 
-    // Act: Attempt to authenticate with the correct email but wrong password
+    // Act
+    const result = await sut.execute({
+      email: userData.email,
+      password: userData.password,
+    })
+
+    // Assert
+    expect(result.isRight()).toBeTruthy()
+    expect(inMemoryRefreshTokenRepository.items).toHaveLength(1)
+
+    if (result.isRight()) {
+      const { user, refreshToken } = result.value
+      expect(user.id).toBeDefined()
+      expect(user.email).toBe(userData.email)
+      expect(user.name).toBe(userData.name)
+      expect(user).not.toHaveProperty('passwordHash')
+
+      expect(refreshToken).toEqual(expect.any(String))
+      expect(inMemoryRefreshTokenRepository.items[0].token).toEqual(refreshToken)
+      expect(inMemoryRefreshTokenRepository.items[0].userId).toEqual(user.id)
+    }
+  })
+
+  it('should not be able to authenticate with wrong email', async () => {
+    // Arrange
+    const loginData = makeUser()
+
+    // Act
+    const result = await sut.execute({
+      email: 'wrong.email@example.com',
+      password: loginData.password,
+    })
+
+    // Assert
+    expect(result.isLeft()).toBeTruthy()
+    if (result.isLeft()) {
+      const error = result.value
+      expect(error).toBeInstanceOf(InvalidCredentialsError)
+      expect(error.message).toBe('Invalid credentials')
+    }
+  })
+
+  it('should not be able to authenticate with wrong password', async () => {
+    // Arrange
+    const userData = makeUser()
+    const passwordHash = await hash(userData.password, 6)
+
+    await inMemoryUsersRepository.create({
+      name: userData.name,
+      email: userData.email,
+      passwordHash,
+    })
+
+    // Act
     const result = await sut.execute({
       email: userData.email,
       password: 'wrongPassword123!',
     })
 
-    // Assert: Check for authentication failure (UnauthorizedError)
+    // Assert
     expect(result.isLeft()).toBeTruthy()
     if (result.isLeft()) {
       const error = result.value

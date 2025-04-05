@@ -81,7 +81,9 @@ The API exposes the following main endpoints, grouped by resource:
 
 **Users (`/users`)**
 *   `POST /`: Register a new user.
-*   `POST /auth`: Authenticate a user and receive a JWT.
+*   `POST /auth`: Authenticate a user and receive JWT access and refresh tokens.
+*   `POST /refresh`: Obtain a new access token using a valid refresh token (implements token rotation).
+*   `POST /logout` (Authenticated): Invalidate the user's session by deleting their refresh tokens.
 *   `GET /me` (Authenticated): Get the profile of the currently logged-in user.
 
 **Gyms (`/gyms`)**
@@ -106,7 +108,13 @@ Security is addressed through multiple mechanisms:
 *   **Authentication with JWT (RS256)**:
     *   Uses JSON Web Tokens signed with the asymmetric RS256 algorithm.
     *   **Asymmetric Signing**: Employs a public/private key pair. The private key (kept secure on the server) signs the token, while the public key can be distributed to verify the token's authenticity without exposing the signing key. This is more secure than symmetric algorithms (like HS256) for many scenarios.
-    *   JWTs identify authenticated users for subsequent requests.
+    *   JWTs identify authenticated users for subsequent requests (typically short-lived, e.g., 7 days).
+*   **Refresh Token Strategy**:
+    *   Alongside the short-lived access token, a long-lived **refresh token** (e.g., 30 days) is issued upon successful authentication (`POST /users/auth`).
+    *   Refresh tokens are stored securely in the database (associated with the user).
+    *   When an access token expires, the client can use a valid refresh token to obtain a new access token via the `POST /users/refresh` endpoint.
+    *   **Token Rotation**: For enhanced security, this endpoint implements refresh token rotation. When a refresh token is used successfully, it is invalidated (deleted), and a *new* refresh token is issued along with the new access token. This helps mitigate the risk of leaked refresh tokens.
+    *   **Logout**: The `POST /users/logout` endpoint invalidates the user's session by deleting all associated refresh tokens from the database, preventing further token refreshes.
 *   **Password Hashing**: User passwords are securely hashed using `bcrypt` before being stored. Plain text passwords are never stored.
 *   **Input Validation**: All incoming data (request bodies, query parameters) is rigorously validated using Zod schemas to prevent invalid or malicious data from entering the system.
 

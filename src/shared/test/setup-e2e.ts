@@ -9,9 +9,11 @@ import { container } from 'tsyringe'
 import { IUserRepository } from '@/domains/users/repository/IUserRepository'
 import { IGymRepository } from '@/domains/gyms/repository/IGymRepository'
 import { ICheckInRepository } from '@/domains/checkin/repository/ICheckInRepository'
+import { IRefreshTokenRepository } from '@/domains/users/repository/IRefreshTokenRepository' // Import interface
 import { PrismaUserRepository } from '@/infrastructure/repositories/prisma-users-repository'
 import { PrismaGymsRepository } from '@/infrastructure/repositories/prisma-gyms-repository'
 import { PrismaCheckInRepository } from '@/infrastructure/repositories/prisma-check-ins-repository'
+import { PrismaRefreshTokenRepository } from '@/infrastructure/repositories/prisma-refresh-token-repository' // Import implementation
 
 config({ path: '.env', override: true })
 
@@ -61,9 +63,12 @@ beforeAll(async () => {
     useValue: new PrismaGymsRepository(testPrismaClient),
   })
   container.register<ICheckInRepository>('CheckInRepository', {
-    useValue: new PrismaCheckInRepository(testPrismaClient), // Pass test client
+    useValue: new PrismaCheckInRepository(testPrismaClient),
   })
-  // console.log(`🔄 Overrode Repository registrations with test instances.`) // Removed log
+  // Override RefreshTokenRepository as well
+  container.register<IRefreshTokenRepository>('RefreshTokenRepository', {
+      useValue: new PrismaRefreshTokenRepository(testPrismaClient),
+  })
 })
 
 afterAll(async () => {

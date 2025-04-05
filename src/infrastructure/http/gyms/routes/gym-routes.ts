@@ -4,15 +4,17 @@ import { FastifyInstance } from 'fastify'
 import { z } from 'zod'
 import { makeGymNearbyController } from '@/infrastructure/factories/gyms/makeNearByGymController'
 import { makeGymSearchController } from '@/infrastructure/factories/gyms/makeGymSearch'
+import {
+  generalErrorSchema,
+  validationErrorSchema,
+} from '@/application/schemas/common-schemas'
 
 export async function gymRoutes(app: FastifyInstance) {
-  // Instantiate controllers
   const gymController = makeGymController()
   const gymSearchController = makeGymSearchController()
   const gymNearbyController = makeGymNearbyController()
   const checkInCreateController = makeCheckInCreateController()
 
-  // Register Gym Route (POST /)
   app.post(
     '/',
     {
@@ -32,27 +34,14 @@ export async function gymRoutes(app: FastifyInstance) {
           201: z.object({
             id: z.string().uuid(),
           }),
-          400: z.object({
-            error: z.literal('ValidationError'),
-            message: z.array(
-              z.object({
-                field: z.string(),
-                message: z.string(),
-              }),
-            ),
-          }),
-          500: z.object({
-            statusCode: z.number(),
-            error: z.string(),
-            message: z.string(),
-          }),
+          400: validationErrorSchema,
+          500: generalErrorSchema,
         },
       },
     },
     gymController.register,
   )
 
-  // Search Gyms Route (GET /search)
   app.get(
     '/search',
     {
@@ -75,27 +64,14 @@ export async function gymRoutes(app: FastifyInstance) {
               }),
             ),
           }),
-          400: z.object({
-            error: z.literal('ValidationError'),
-            message: z.array(
-              z.object({
-                field: z.string(),
-                message: z.string(),
-              }),
-            ),
-          }),
-          500: z.object({
-            statusCode: z.number(),
-            error: z.string(),
-            message: z.string(),
-          }),
+          400: validationErrorSchema,
+          500: generalErrorSchema,
         },
       },
     },
     gymSearchController.search,
   )
 
-  // Nearby Gyms Route (GET /nearby)
   app.get(
     '/nearby',
     {
@@ -118,27 +94,14 @@ export async function gymRoutes(app: FastifyInstance) {
               }),
             ),
           }),
-          400: z.object({
-            error: z.literal('ValidationError'),
-            message: z.array(
-              z.object({
-                field: z.string(),
-                message: z.string(),
-              }),
-            ),
-          }),
-          500: z.object({
-            statusCode: z.number(),
-            error: z.string(),
-            message: z.string(),
-          }),
+          400: validationErrorSchema,
+          500: generalErrorSchema,
         },
       },
     },
     gymNearbyController.fetchNearby,
   )
 
-  // Create Check-in Route (POST /:gymId/check-ins)
   app.post(
     '/:gymId/check-ins',
     {
@@ -158,22 +121,9 @@ export async function gymRoutes(app: FastifyInstance) {
           201: z.object({
             id: z.string().uuid(),
           }),
-          400: z.object({
-            error: z
-              .literal('ValidationError')
-              .or(z.literal('BadRequestError')),
-            message: z.any(),
-          }),
-          404: z.object({
-            statusCode: z.number(),
-            error: z.literal('NotFoundError'),
-            message: z.string(),
-          }),
-          500: z.object({
-            statusCode: z.number(),
-            error: z.string(),
-            message: z.string(),
-          }),
+          400: validationErrorSchema,
+          404: generalErrorSchema,
+          500: generalErrorSchema,
         },
       },
     },
